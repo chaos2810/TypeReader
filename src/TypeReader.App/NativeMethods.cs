@@ -94,6 +94,7 @@ internal static class NativeMethods
     public static extern bool SetWindowCompositionAttribute(IntPtr hwnd, ref WindowCompositionAttributeData data);
 
     public const int WCA_ACCENT_POLICY = 19;
+    public const int ACCENT_DISABLED = 0;
     public const int ACCENT_ENABLE_ACRYLICBLURBEHIND = 4;
 
     public const uint SWP_NOZORDER = 0x0004;
