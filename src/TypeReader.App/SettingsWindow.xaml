@@ -10,5 +10,11 @@
         <ComboBox x:Name="SizeBox" SelectionChanged="OnSizeChanged"/>
         <TextBlock Text="Preview" Margin="0,12,0,0"/>
         <TextBlock x:Name="PreviewText" Text="Aa Bb 123" Margin="0,4,0,0"/>
+        <TextBlock Text="Position" Margin="0,12,0,0"/>
+        <StackPanel Orientation="Horizontal">
+            <RadioButton x:Name="PosLeft" Content="Left" Margin="0,0,12,0" Checked="OnPositionChanged"/>
+            <RadioButton x:Name="PosCenter" Content="Center" Margin="0,0,12,0" Checked="OnPositionChanged"/>
+            <RadioButton x:Name="PosRight" Content="Right" Checked="OnPositionChanged"/>
+        </StackPanel>
     </StackPanel>
 </Window>

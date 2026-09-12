@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Interop;
+using TypeReader.Core;
 
 namespace TypeReader.App;
 
@@ -97,15 +98,23 @@ internal sealed class TaskbarEmbedder
             Reposition(taskbar);
     }
 
+    public WidgetPosition Position { get; set; } = WidgetPosition.Center;
+
     private void Reposition(IntPtr taskbar)
     {
         NativeMethods.GetWindowRect(taskbar, out var tb);
         double dpi = NativeMethods.GetDpiForWindow(taskbar) / 96.0;
+        double taskbarW = (tb.Right - tb.Left) / dpi;
         double h = (tb.Bottom - tb.Top) / dpi;
         double y = (h - WidgetHeight) / 2;
-        // Position default: Left (Task 6 makes this a setting)
+        double x = Position switch
+        {
+            WidgetPosition.Left => 20,
+            WidgetPosition.Right => taskbarW - WidgetWidth - 20,
+            _ => (taskbarW - WidgetWidth) / 2,
+        };
         NativeMethods.SetWindowPos(_widgetHwnd, IntPtr.Zero,
-            (int)(20 * dpi), (int)(y * dpi),
+            (int)(x * dpi), (int)(y * dpi),
             (int)(WidgetWidth * dpi), (int)(WidgetHeight * dpi),
             NativeMethods.SWP_NOZORDER | NativeMethods.SWP_NOACTIVATE | NativeMethods.SWP_SHOWWINDOW);
     }

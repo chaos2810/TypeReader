@@ -32,6 +32,7 @@ public partial class WidgetWindow : Window
     public void EmbedBeforeShow()
     {
         _embedder = new TaskbarEmbedder(this);
+        _embedder.Position = new SettingsStore().Load().Position;
         ApplyThemeForeground();
         _embedder.Embed();               // WS_CHILD + SetParent + position + acrylic
         StartReembedWatch();
@@ -76,6 +77,11 @@ public partial class WidgetWindow : Window
         var s = new SettingsStore().Load();
         KeyText.FontFamily = new System.Windows.Media.FontFamily(s.FontFamily);
         KeyText.FontSize = s.FontSize;
+        if (_embedder != null)
+        {
+            _embedder.Position = s.Position;
+            _embedder.CheckAndReembed();
+        }
     }
 
     private void OnQuit(object sender, RoutedEventArgs e)

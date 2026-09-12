@@ -19,6 +19,12 @@ public partial class SettingsWindow : Window
         foreach (var size in new[] { "10", "12", "14", "16", "18", "20", "24" })
             SizeBox.Items.Add(size);
         SizeBox.SelectedItem = ((int)_settings.FontSize).ToString();
+        switch (_settings.Position)
+        {
+            case WidgetPosition.Left: PosLeft.IsChecked = true; break;
+            case WidgetPosition.Right: PosRight.IsChecked = true; break;
+            default: PosCenter.IsChecked = true; break;
+        }
         ApplyPreview();
     }
 
@@ -44,6 +50,14 @@ public partial class SettingsWindow : Window
             _settings.FontSize = size;
             ApplyPreview(); Save();
         }
+    }
+
+    private void OnPositionChanged(object sender, RoutedEventArgs e)
+    {
+        _settings.Position = PosLeft.IsChecked == true ? WidgetPosition.Left
+            : PosRight.IsChecked == true ? WidgetPosition.Right
+            : WidgetPosition.Center;
+        Save();
     }
 
     private void Save()
