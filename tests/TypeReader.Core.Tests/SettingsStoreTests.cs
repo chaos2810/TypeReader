@@ -40,4 +40,39 @@ public class SettingsStoreTests
         var loaded = store.Load();
         Assert.Equal("Segoe UI", loaded.FontFamily);
     }
+
+    [Fact]
+    public void Load_InvalidFontSize_FallsBackToDefault()
+    {
+        Directory.CreateDirectory(TestDir);
+        File.WriteAllText(Path.Combine(TestDir, "settings.json"),
+            """{"FontSize": -5, "FontFamily": "Consolas", "Position": 0}""");
+        var store = new SettingsStore(TestDir);
+        var loaded = store.Load();
+        Assert.Equal(14, loaded.FontSize);
+        Assert.Equal("Consolas", loaded.FontFamily);
+    }
+
+    [Fact]
+    public void Load_EmptyFontFamily_FallsBackToDefault()
+    {
+        Directory.CreateDirectory(TestDir);
+        File.WriteAllText(Path.Combine(TestDir, "settings.json"),
+            """{"FontSize": 20, "FontFamily": "", "Position": 0}""");
+        var store = new SettingsStore(TestDir);
+        var loaded = store.Load();
+        Assert.Equal("Segoe UI", loaded.FontFamily);
+        Assert.Equal(20, loaded.FontSize);
+    }
+
+    [Fact]
+    public void Load_OutOfRangePosition_FallsBackToDefault()
+    {
+        Directory.CreateDirectory(TestDir);
+        File.WriteAllText(Path.Combine(TestDir, "settings.json"),
+            """{"FontSize": 20, "FontFamily": "Consolas", "Position": 7}""");
+        var store = new SettingsStore(TestDir);
+        var loaded = store.Load();
+        Assert.Equal(WidgetPosition.Center, loaded.Position);
+    }
 }

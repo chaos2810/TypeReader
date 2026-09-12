@@ -33,6 +33,11 @@ internal static class NativeMethods
     [DllImport("user32.dll")]
     public static extern bool SetWindowRgn(IntPtr hWnd, IntPtr hRgn, bool bRedraw);
 
+    [DllImport("user32.dll")]
+    public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+    public const int SW_HIDE = 0;
+
     // Acrylic blur (FluentFlyout WindowBlurHelper recipe)
     [StructLayout(LayoutKind.Sequential)]
     public struct AccentPolicy

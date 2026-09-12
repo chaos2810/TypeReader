@@ -36,6 +36,8 @@ internal sealed class TaskbarEmbedder
     // R2: detach before close — restore popup style, unparent, no residue
     public void Detach()
     {
+        // hide first so unparenting a visible window doesn't flash top-level
+        NativeMethods.ShowWindow(_widgetHwnd, NativeMethods.SW_HIDE);
         NativeMethods.SetParent(_widgetHwnd, IntPtr.Zero);
         long style = NativeMethods.GetWindowLongPtr(_widgetHwnd, NativeMethods.GWL_STYLE);
         style = (style & ~NativeMethods.WS_CHILD) | NativeMethods.WS_POPUP;

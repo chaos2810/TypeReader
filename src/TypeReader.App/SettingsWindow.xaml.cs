@@ -62,7 +62,14 @@ public partial class SettingsWindow : Window
 
     private void Save()
     {
-        new SettingsStore().Save(_settings);
-        SettingsChanged?.Invoke();
+        try
+        {
+            new SettingsStore().Save(_settings);
+            SettingsChanged?.Invoke();
+        }
+        catch (System.IO.IOException)
+        {
+            // settings write failed (disk/lock); keep running with in-memory settings
+        }
     }
 }

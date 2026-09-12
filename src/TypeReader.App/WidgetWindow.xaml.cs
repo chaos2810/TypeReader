@@ -48,11 +48,11 @@ public partial class WidgetWindow : Window
         KeyMenu.Foreground = light ? Brushes.Black : Brushes.White;
     }
 
-    private void OnKeyPressed(int vkCode, bool[] keyboardState, bool isKeyDown)
+    private void OnKeyPressed(int vkCode, bool[] keyboardState, bool isKeyDown, byte[] rawKeyboardState)
     {
         Dispatcher.BeginInvoke(() =>
         {
-            var text = _formatter.Format(vkCode, keyboardState, isKeyDown);
+            var text = _formatter.Format(vkCode, keyboardState, isKeyDown, rawKeyboardState);
             if (text != null)
                 KeyText.Text = text;
         });
