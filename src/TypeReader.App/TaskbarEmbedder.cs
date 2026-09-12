@@ -44,10 +44,50 @@ internal sealed class TaskbarEmbedder
         _lastTaskbarHandle = IntPtr.Zero;
     }
 
-    // R3: native look per FluentFlyout's TaskbarWidgetControl — NO permanent
-    // acrylic on the widget; the taskbar's own material shows through, and
-    // the hover glass tint is drawn by WidgetWindow. WindowBlurHelper acrylic
-    // is for FF's flyout windows only, never their taskbar widget.
+    // R3: hover glass — real frosted blur applied on hover only. At rest the
+    // widget is transparent over the taskbar (like FluentFlyout's taskbar
+    // widget); on hover the acrylic accent frosts the area behind the box
+    // (the FF WindowBlurHelper technique, at a lighter tint than their
+    // flyouts so it reads as glass, not a dark slab).
+
+    public void EnableAcrylic()
+    {
+        uint background = LightTheme ? 0xF3F3F3u : 0x202020u;
+        SetAccent(new NativeMethods.AccentPolicy
+        {
+            AccentState = NativeMethods.ACCENT_ENABLE_ACRYLICBLURBEHIND,
+            GradientColor = (0x66u << 24) | (background & 0xFFFFFF)
+        });
+    }
+
+    public void DisableAcrylic()
+    {
+        SetAccent(new NativeMethods.AccentPolicy
+        {
+            AccentState = NativeMethods.ACCENT_DISABLED
+        });
+    }
+
+    private void SetAccent(NativeMethods.AccentPolicy accent)
+    {
+        int size = System.Runtime.InteropServices.Marshal.SizeOf<NativeMethods.AccentPolicy>();
+        IntPtr accentPtr = System.Runtime.InteropServices.Marshal.AllocHGlobal(size);
+        try
+        {
+            System.Runtime.InteropServices.Marshal.StructureToPtr(accent, accentPtr, false);
+            var data = new NativeMethods.WindowCompositionAttributeData
+            {
+                Attribute = NativeMethods.WCA_ACCENT_POLICY,
+                Data = accentPtr,
+                SizeOfData = size
+            };
+            NativeMethods.SetWindowCompositionAttribute(_widgetHwnd, ref data);
+        }
+        finally
+        {
+            System.Runtime.InteropServices.Marshal.FreeHGlobal(accentPtr);
+        }
+    }
 
     private static bool IsLightTheme()
     {
