@@ -5,7 +5,7 @@ namespace TypeReader.Core;
 
 public sealed class ToUnicodeCharMapper : ICharMapper
 {
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     private static extern int ToUnicodeEx(uint vk, uint scanCode, byte[] lpKeyState,
         [Out] StringBuilder pwszBuff, int cchBuff, uint wFlags, IntPtr hkl);
 
