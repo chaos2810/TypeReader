@@ -45,6 +45,12 @@ public sealed class KeyboardHook : IDisposable
         return NativeMethods.CallNextHookEx(_hookId, nCode, wParam, lParam);
     }
 
+    ~KeyboardHook()
+    {
+        if (_hookId != IntPtr.Zero)
+            NativeMethods.UnhookWindowsHookEx(_hookId);
+    }
+
     public void Dispose()
     {
         if (_hookId != IntPtr.Zero)
