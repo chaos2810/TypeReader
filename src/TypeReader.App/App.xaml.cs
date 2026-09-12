@@ -6,10 +6,12 @@ namespace TypeReader.App;
 public partial class App : Application
 {
     private static Mutex? _mutex;
+    private static bool _ownsMutex;
 
     protected override void OnStartup(StartupEventArgs e)
     {
         _mutex = new Mutex(true, "TypeReader.SingleInstance", out bool isNew);
+        _ownsMutex = isNew;
         if (!isNew)
         {
             Shutdown();
@@ -26,7 +28,8 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
-        _mutex?.ReleaseMutex();
+        if (_ownsMutex)
+            _mutex?.ReleaseMutex();
         base.OnExit(e);
     }
 }
