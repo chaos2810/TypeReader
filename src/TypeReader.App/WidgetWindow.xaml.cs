@@ -25,6 +25,7 @@ public partial class WidgetWindow : Window
         {
             KeyText.Text = "⚠"; // capture unavailable; widget continues without capture
         }
+        ApplySettings();
     }
 
     // R1: called by App.OnStartup after EnsureHandle(), before Show()
