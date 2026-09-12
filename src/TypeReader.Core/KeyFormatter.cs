@@ -27,7 +27,10 @@ public class KeyFormatter
         if (VKCodes.IsModifier(vkCode))
         {
             if (!isKeyDown)
+            {
+                _heldModifiers.RemoveAll(m => m == vkCode);
                 return null; // modifier release never changes display
+            }
             _heldModifiers.Add(vkCode);
             return ModifierNames[vkCode];
         }

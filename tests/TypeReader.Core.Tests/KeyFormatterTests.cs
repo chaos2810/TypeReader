@@ -121,4 +121,14 @@ public class KeyFormatterTests
         var f = new KeyFormatter();
         Assert.Equal("Win", f.Format(VKCodes.LWIN, State(VKCodes.LWIN), isKeyDown: true));
     }
+
+    [Fact]
+    public void CtrlTappedAndReleased_ThenS_IsPlainChar()
+    {
+        var f = new KeyFormatter();
+        f.Format(VKCodes.CONTROL, State(VKCodes.CONTROL), isKeyDown: true);
+        f.Format(VKCodes.CONTROL, State(), isKeyDown: false);
+        var result = f.Format(0x53, State(), isKeyDown: true); // 'S' key
+        Assert.Equal("s", result);
+    }
 }
