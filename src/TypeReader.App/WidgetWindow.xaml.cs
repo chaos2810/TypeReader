@@ -65,7 +65,16 @@ public partial class WidgetWindow : Window
 
     private void OnSettings(object sender, RoutedEventArgs e)
     {
-        KeyText.Text = "Settings (soon)"; // placeholder until Task 5
+        var settingsWindow = new SettingsWindow();
+        settingsWindow.SettingsChanged += ApplySettings;
+        settingsWindow.Show();
+    }
+
+    private void ApplySettings()
+    {
+        var s = new SettingsStore().Load();
+        KeyText.FontFamily = new System.Windows.Media.FontFamily(s.FontFamily);
+        KeyText.FontSize = s.FontSize;
     }
 
     private void OnQuit(object sender, RoutedEventArgs e)

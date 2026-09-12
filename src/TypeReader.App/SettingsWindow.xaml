@@ -1,0 +1,14 @@
+<Window x:Class="TypeReader.App.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Type Reader Settings" Width="360" Height="240"
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+    <StackPanel Margin="16">
+        <TextBlock Text="Font"/>
+        <ComboBox x:Name="FontBox" SelectionChanged="OnFontChanged"/>
+        <TextBlock Text="Size" Margin="0,12,0,0"/>
+        <ComboBox x:Name="SizeBox" SelectionChanged="OnSizeChanged"/>
+        <TextBlock Text="Preview" Margin="0,12,0,0"/>
+        <TextBlock x:Name="PreviewText" Text="Aa Bb 123" Margin="0,4,0,0"/>
+    </StackPanel>
+</Window>
