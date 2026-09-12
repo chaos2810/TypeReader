@@ -15,6 +15,11 @@
 
   <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="8.0.7" />
+    <PackageReference Include="WPF-UI" Version="3.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="trayicon.ico" />
   </ItemGroup>
 
   <!-- WinForms implicit global usings (Forms, Drawing) collide with WPF types (Application, Brushes, FontFamily); TrayIcon imports them explicitly -->

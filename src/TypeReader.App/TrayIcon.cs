@@ -1,4 +1,6 @@
 using System.Drawing;
+using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Forms;
 
@@ -16,10 +18,26 @@ internal sealed class TrayIcon : IDisposable
         _icon = new NotifyIcon
         {
             Text = "Type Reader",
-            Icon = SystemIcons.Application,
+            Icon = LoadAppIcon(),
             Visible = true,
             ContextMenuStrip = BuildMenu(),
         };
+    }
+
+    private static Icon LoadAppIcon()
+    {
+        try
+        {
+            var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
+            var path = Path.Combine(dir, "trayicon.ico");
+            if (File.Exists(path))
+                return new Icon(path);
+        }
+        catch
+        {
+            // fall through to the default icon
+        }
+        return SystemIcons.Application;
     }
 
     private ContextMenuStrip BuildMenu()

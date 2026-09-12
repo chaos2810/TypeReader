@@ -50,6 +50,8 @@ public partial class WidgetWindow : Window
         bool light = TaskbarEmbedder.LightTheme;
         KeyText.Foreground = light ? Brushes.Black : Brushes.White;
         KeyMenu.Foreground = light ? Brushes.Black : Brushes.White;
+        // WPF-UI theme resources drive the menu chrome; text color must match
+        App.ApplySystemTheme();
     }
 
     private void OnKeyPressed(int vkCode, bool[] keyboardState, bool isKeyDown, byte[] rawKeyboardState)

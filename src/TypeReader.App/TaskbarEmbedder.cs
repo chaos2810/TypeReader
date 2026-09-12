@@ -113,21 +113,144 @@ internal sealed class TaskbarEmbedder
     {
         NativeMethods.GetWindowRect(taskbar, out var tb);
         double dpi = NativeMethods.GetDpiForWindow(taskbar) / 96.0;
-        double taskbarW = (tb.Right - tb.Left) / dpi;
         double h = (tb.Bottom - tb.Top) / dpi;
         double y = (h - WidgetHeight) / 2;
+        double taskbarW = (tb.Right - tb.Left) / dpi;
+
+        // occupied intervals of the taskbar (other widgets, tray, discrete
+        // icon containers) — our widget must not overlap any of them
+        var occupied = OccupiedIntervals(taskbar, tb, dpi);
+
         double x = Position switch
         {
-            WidgetPosition.Left => 20,
-            // FluentFlyout approach: anchor to the system tray's left edge so the
-            // widget occupies its own space instead of overlapping clock/date/icons
-            WidgetPosition.Right => RightAnchorX(taskbar, tb, dpi) - WidgetWidth - 4,
-            _ => (taskbarW - WidgetWidth) / 2,
+            WidgetPosition.Left => FindFreeX(occupied, 0, +1, taskbarW - WidgetWidth),
+            // anchor near the system tray's left edge, sliding left past
+            // anything already occupying that space
+            WidgetPosition.Right => FindFreeX(occupied, RightAnchorX(taskbar, tb, dpi) - WidgetWidth - 4, -1, taskbarW - WidgetWidth),
+            _ => FindFreeX(occupied, taskbarW / 2.0 - WidgetWidth / 2.0, +1, taskbarW - WidgetWidth),
         };
         NativeMethods.SetWindowPos(_widgetHwnd, IntPtr.Zero,
             (int)(x * dpi), (int)(y * dpi),
             (int)(WidgetWidth * dpi), (int)(WidgetHeight * dpi),
             NativeMethods.SWP_NOZORDER | NativeMethods.SWP_NOACTIVATE | NativeMethods.SWP_SHOWWINDOW);
+    }
+
+    // scan from `start` in `direction` (±4px steps) until the widget fits
+    // without overlapping any occupied interval, bounded to the taskbar
+    private static double FindFreeX(List<(double Start, double End)> occupied, double start, int direction, double maxX)
+    {
+        bool Fits(double x) => occupied.All(o => x + WidgetWidth <= o.Start || x >= o.End);
+
+        double x = Math.Clamp(start, 0, Math.Max(0, maxX));
+        if (Fits(x)) return x;
+        // walk right/left from the clamped start looking for the nearest gap
+        double best = x;
+        double bestDist = double.MaxValue;
+        for (double probe = 0; probe <= maxX; probe += 4)
+        {
+            if (!Fits(probe)) continue;
+            double dist = Math.Abs(probe - start);
+            if (dist < bestDist) { bestDist = dist; best = probe; }
+        }
+        return best;
+    }
+
+    private List<(double Start, double End)> OccupiedIntervals(IntPtr taskbar, NativeMethods.RECT tb, double dpi)
+    {
+        double taskbarW = (tb.Right - tb.Left) / dpi;
+        var list = new List<(double, double)>();
+
+        // pass 1: child HWNDs (TrayNotifyWnd, other widgets' windows)
+        NativeMethods.EnumChildWindows(taskbar, (h, l) =>
+        {
+            if (h == _widgetHwnd) return true; // skip ourselves
+            if (!NativeMethods.IsWindowVisible(h)) return true;
+
+            if (NativeMethods.GetWindowRect(h, out var r))
+            {
+                double start = (r.Left - tb.Left) / dpi;
+                double end = (r.Right - tb.Left) / dpi;
+                double w = end - start;
+                // full-width children are XAML host containers (TrayUIWnd etc),
+                // not discrete icons — the icons inside them are not HWNDs and
+                // the container spans the whole bar, so it is not an obstacle
+                if (w > taskbarW * 0.8) return true;
+                if (w > 1 && end > start)
+                    list.Add((start, end));
+            }
+            return true;
+        }, IntPtr.Zero);
+
+        // pass 2: UI Automation — sees Win11 XAML taskbar buttons (pinned
+        // icons, search, widgets, clock) that have no HWND. Cached + time-boxed
+        // (FluentFlyout uses the same technique).
+        foreach (var iv in UiaOccupiedIntervals(taskbar, tb, dpi))
+        {
+            double w = iv.End - iv.Start;
+            if (w <= taskbarW * 0.8 && w > 1)
+                list.Add(iv);
+        }
+
+        // merge overlapping intervals
+        var merged = new List<(double, double)>();
+        foreach (var iv in list.OrderBy(v => v.Item1))
+        {
+            if (merged.Count > 0 && iv.Item1 <= merged[^1].Item2)
+                merged[^1] = (merged[^1].Item1, Math.Max(merged[^1].Item2, iv.Item2));
+            else
+                merged.Add(iv);
+        }
+        return merged;
+    }
+
+    private List<(double Start, double End)>? _uiaRaw;
+    private IntPtr _uiaTaskbar;
+    private DateTime _uiaTime = DateTime.MinValue;
+
+    private List<(double Start, double End)> UiaOccupiedIntervals(IntPtr taskbar, NativeMethods.RECT tb, double dpi)
+    {
+        const double cacheSeconds = 5.0;
+        if (_uiaRaw != null && _uiaTaskbar == taskbar
+            && (DateTime.UtcNow - _uiaTime).TotalSeconds < cacheSeconds)
+            return _uiaRaw.Select(v => ((v.Start - tb.Left) / dpi, (v.End - tb.Left) / dpi)).ToList();
+
+        var raw = new List<(double Start, double End)>(); // physical screen px
+        var task = System.Threading.Tasks.Task.Run(() =>
+        {
+            try
+            {
+                var root = System.Windows.Automation.AutomationElement.FromHandle(taskbar);
+                var elements = root.FindAll(System.Windows.Automation.TreeScope.Descendants,
+                    System.Windows.Automation.Condition.TrueCondition);
+                int ourPid = Environment.ProcessId;
+                foreach (System.Windows.Automation.AutomationElement el in elements)
+                {
+                    try
+                    {
+                        if (el.Current.ProcessId == ourPid) continue;
+                        var r = el.Current.BoundingRectangle;
+                        if (r.IsEmpty || r.Width < 1) continue;
+                        raw.Add((r.Left, r.Right));
+                    }
+                    catch (System.Windows.Automation.ElementNotAvailableException)
+                    {
+                        // element vanished mid-enumeration
+                    }
+                }
+            }
+            catch
+            {
+                // UIA unavailable/slow — HWND pass still covers the basics
+            }
+        });
+        if (!task.Wait(1000))
+        {
+            // time-boxed: keep whatever was collected before the deadline
+        }
+        _uiaRaw = raw;
+        _uiaTaskbar = taskbar;
+        _uiaTime = DateTime.UtcNow;
+        return raw.Select(v => ((v.Start - tb.Left) / dpi, (v.End - tb.Left) / dpi)).ToList();
     }
 
     private static double RightAnchorX(IntPtr taskbar, NativeMethods.RECT taskbarRect, double dpi)

@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Windows;
+using Wpf.Ui.Appearance;
 
 namespace TypeReader.App;
 
@@ -24,7 +25,23 @@ public partial class App : Application
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
         base.OnStartup(e);
 
+        // match WPF-UI resources to the Windows theme so menus/settings
+        // look native alongside the taskbar
+        ApplySystemTheme();
+
         CreateWidget();
+    }
+
+    internal static void ApplySystemTheme()
+    {
+        bool light = TypeReader.App.TaskbarEmbedder.LightTheme;
+        ApplicationThemeManager.Apply(light ? ApplicationTheme.Light : ApplicationTheme.Dark);
+    }
+
+    private void OnDispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+    {
+        // never let a background blip kill the widget; keep it alive
+        e.Handled = true;
     }
 
     private static void CreateWidget()

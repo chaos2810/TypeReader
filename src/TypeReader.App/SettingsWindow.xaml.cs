@@ -1,10 +1,11 @@
 using System.Windows;
 using System.Windows.Media;
 using TypeReader.Core;
+using Wpf.Ui.Controls;
 
 namespace TypeReader.App;
 
-public partial class SettingsWindow : Window
+public partial class SettingsWindow : FluentWindow
 {
     private readonly Settings _settings = new SettingsStore().Load();
 
