@@ -60,14 +60,16 @@ public partial class WidgetWindow : Window
     {
         bool isDark = !TaskbarEmbedder.LightTheme;
 
-        // FluentFlyout's recipe: subtle glass sheen. Keep the overlay faint —
-        // the taskbar acrylic beneath should stay the dominant look.
-        var targetColor = System.Windows.Media.Color.FromArgb(255, 255, 255, 255);
-        double targetOpacity = isDark ? 0.075 : 0.35;
+        // FluentFlyout Grid_MouseEnter, verbatim values: the tint draws
+        // directly over the taskbar's own acrylic (no panel underneath)
+        var targetColor = isDark
+            ? System.Windows.Media.Color.FromArgb(197, 255, 255, 255)
+            : System.Windows.Media.Color.FromArgb(255, 255, 255, 255);
+        double targetOpacity = isDark ? 0.075 : 0.6;
 
         TopBorder.BorderBrush = new SolidColorBrush(
             System.Windows.Media.Color.FromArgb(93, 255, 255, 255))
-        { Opacity = isDark ? 0.25 : 0.6 };
+        { Opacity = isDark ? 0.25 : 1 };
 
         AnimateHover(targetColor, targetOpacity, System.Windows.Media.Animation.EasingMode.EaseOut);
     }
