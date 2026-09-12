@@ -12,10 +12,13 @@ public partial class WidgetWindow : Window
     private TaskbarEmbedder? _embedder;
     private System.Windows.Threading.DispatcherTimer? _reembedTimer;
     private bool _detached;
+    private readonly TrayIcon _tray = new();
 
     public WidgetWindow()
     {
         InitializeComponent();
+        _tray.SettingsRequested += () => Dispatcher.Invoke(() => OnSettings(null!, null!));
+        _tray.QuitRequested += () => Dispatcher.Invoke(OnQuit);
         _hook.KeyPressed += OnKeyPressed;
         try
         {
@@ -105,6 +108,7 @@ public partial class WidgetWindow : Window
             _detached = true;
         }
         _hook.Dispose();
+        _tray.Dispose();
         base.OnClosed(e);
     }
 }
