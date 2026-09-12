@@ -1,6 +1,4 @@
 using System.Drawing;
-using System.IO;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Forms;
 
@@ -28,10 +26,11 @@ internal sealed class TrayIcon : IDisposable
     {
         try
         {
-            var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
-            var path = Path.Combine(dir, "trayicon.ico");
-            if (File.Exists(path))
-                return new Icon(path);
+            // trayicon.ico is embedded as a WPF Resource (pack URI)
+            var uri = new Uri("pack://application:,,,/trayicon.ico", UriKind.Absolute);
+            var stream = System.Windows.Application.GetResourceStream(uri)?.Stream;
+            if (stream != null)
+                return new Icon(stream);
         }
         catch
         {

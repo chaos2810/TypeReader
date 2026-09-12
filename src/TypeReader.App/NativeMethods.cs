@@ -21,6 +21,21 @@ internal static class NativeMethods
     [DllImport("user32.dll")]
     public static extern bool IsWindowVisible(IntPtr hWnd);
 
+    // window-region queries: embedded taskbar widgets (FluentFlyout) clip
+    // their full-width windows with SetWindowRgn — the region box is their
+    // true visible footprint
+    [DllImport("gdi32.dll")]
+    public static extern IntPtr CreateRectRgn(int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
+
+    [DllImport("user32.dll")]
+    public static extern int GetWindowRgn(IntPtr hWnd, IntPtr hRgn);
+
+    [DllImport("gdi32.dll")]
+    public static extern int GetRgnBox(IntPtr hRgn, out RECT lpRect);
+
+    [DllImport("gdi32.dll")]
+    public static extern bool DeleteObject(IntPtr hObject);
+
     public delegate bool EnumChildProc(IntPtr hWnd, IntPtr lParam);
 
     [DllImport("user32.dll")]

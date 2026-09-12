@@ -166,18 +166,33 @@ internal sealed class TaskbarEmbedder
             if (h == _widgetHwnd) return true; // skip ourselves
             if (!NativeMethods.IsWindowVisible(h)) return true;
 
-            if (NativeMethods.GetWindowRect(h, out var r))
+            if (!NativeMethods.GetWindowRect(h, out var r)) return true;
+            double start = (r.Left - tb.Left) / dpi;
+            double end = (r.Right - tb.Left) / dpi;
+            double w = end - start;
+
+            if (w > taskbarW * 0.8)
             {
-                double start = (r.Left - tb.Left) / dpi;
-                double end = (r.Right - tb.Left) / dpi;
-                double w = end - start;
-                // full-width children are XAML host containers (TrayUIWnd etc),
-                // not discrete icons — the icons inside them are not HWNDs and
-                // the container spans the whole bar, so it is not an obstacle
-                if (w > taskbarW * 0.8) return true;
-                if (w > 1 && end > start)
-                    list.Add((start, end));
+                // full-width child: it may be an embedded widget (FluentFlyout)
+                // that clips itself with a window region — the region box is the
+                // real footprint. Containers with no region stay non-obstacles.
+                var rgn = NativeMethods.CreateRectRgn(0, 0, 0, 0);
+                if (NativeMethods.GetWindowRgn(h, rgn) > 0) // success (SIMPLE=2/COMPLEX=3/NULL=1)
+                {
+                    if (NativeMethods.GetRgnBox(rgn, out var rb) != 0 && rb.Right > rb.Left)
+                    {
+                        double rs = (r.Left + rb.Left) / dpi - tb.Left / dpi;
+                        double re = (r.Left + rb.Right) / dpi - tb.Left / dpi;
+                        double rw = re - rs;
+                        if (rw > 1 && rw <= taskbarW * 0.8)
+                            list.Add((rs, re));
+                    }
+                }
+                NativeMethods.DeleteObject(rgn);
+                return true;
             }
+            if (w > 1 && end > start)
+                list.Add((start, end));
             return true;
         }, IntPtr.Zero);
 
