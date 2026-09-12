@@ -60,14 +60,17 @@ public partial class WidgetWindow : Window
     {
         bool isDark = !TaskbarEmbedder.LightTheme;
 
+        // FluentFlyout's recipe (white overlay + top highlight) reads clearly
+        // on their media-rich widget; on this text-only widget the same alpha
+        // is nearly invisible, so the overlay strength is boosted here.
         var targetColor = isDark
-            ? System.Windows.Media.Color.FromArgb(197, 255, 255, 255)
+            ? System.Windows.Media.Color.FromArgb(255, 255, 255, 255)
             : System.Windows.Media.Color.FromArgb(255, 255, 255, 255);
-        double targetOpacity = isDark ? 0.075 : 0.6;
+        double targetOpacity = isDark ? 0.16 : 0.6;
 
         TopBorder.BorderBrush = new SolidColorBrush(
-            System.Windows.Media.Color.FromArgb(93, 255, 255, 255))
-        { Opacity = isDark ? 0.25 : 1 };
+            System.Windows.Media.Color.FromArgb(147, 255, 255, 255))
+        { Opacity = isDark ? 0.4 : 1 };
 
         AnimateHover(targetColor, targetOpacity, System.Windows.Media.Animation.EasingMode.EaseOut);
     }
