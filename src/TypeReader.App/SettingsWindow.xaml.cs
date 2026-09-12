@@ -67,9 +67,9 @@ public partial class SettingsWindow : Window
             new SettingsStore().Save(_settings);
             SettingsChanged?.Invoke();
         }
-        catch (System.IO.IOException)
+        catch (Exception)
         {
-            // settings write failed (disk/lock); keep running with in-memory settings
+            // settings write failed (disk/lock/ACL); keep running with in-memory settings
         }
     }
 }
