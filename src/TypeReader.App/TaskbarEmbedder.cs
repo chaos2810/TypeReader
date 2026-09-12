@@ -102,6 +102,13 @@ internal sealed class TaskbarEmbedder
 
     public WidgetPosition Position { get; set; } = WidgetPosition.Center;
 
+    // true while the widget HWND still exists — false after Explorer restart
+    // destroys the child windows along with the taskbar
+    public bool IsWidgetWindowAlive()
+    {
+        return NativeMethods.IsWindow(_widgetHwnd);
+    }
+
     private void Reposition(IntPtr taskbar)
     {
         NativeMethods.GetWindowRect(taskbar, out var tb);
@@ -112,12 +119,23 @@ internal sealed class TaskbarEmbedder
         double x = Position switch
         {
             WidgetPosition.Left => 20,
-            WidgetPosition.Right => taskbarW - WidgetWidth - 20,
+            // FluentFlyout approach: anchor to the system tray's left edge so the
+            // widget occupies its own space instead of overlapping clock/date/icons
+            WidgetPosition.Right => RightAnchorX(taskbar, tb, dpi) - WidgetWidth - 4,
             _ => (taskbarW - WidgetWidth) / 2,
         };
         NativeMethods.SetWindowPos(_widgetHwnd, IntPtr.Zero,
             (int)(x * dpi), (int)(y * dpi),
             (int)(WidgetWidth * dpi), (int)(WidgetHeight * dpi),
             NativeMethods.SWP_NOZORDER | NativeMethods.SWP_NOACTIVATE | NativeMethods.SWP_SHOWWINDOW);
+    }
+
+    private static double RightAnchorX(IntPtr taskbar, NativeMethods.RECT taskbarRect, double dpi)
+    {
+        IntPtr tray = NativeMethods.FindWindowEx(taskbar, IntPtr.Zero, "TrayNotifyWnd", null);
+        if (tray != IntPtr.Zero && NativeMethods.GetWindowRect(tray, out var trayRect))
+            return (trayRect.Left - taskbarRect.Left) / dpi;
+        // fallback: tray not found — estimate from the right edge
+        return (taskbarRect.Right - taskbarRect.Left) / dpi - 20;
     }
 }

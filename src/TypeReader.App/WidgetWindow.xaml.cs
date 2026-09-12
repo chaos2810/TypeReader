@@ -14,6 +14,10 @@ public partial class WidgetWindow : Window
     private bool _detached;
     private readonly TrayIcon _tray = new();
 
+    // raised when the widget HWND is destroyed (Explorer restart destroys
+    // children with the taskbar); App recreates the widget
+    public event Action? EmbedderLost;
+
     public WidgetWindow()
     {
         InitializeComponent();
@@ -64,7 +68,20 @@ public partial class WidgetWindow : Window
         {
             Interval = TimeSpan.FromSeconds(1.5)
         };
-        _reembedTimer.Tick += (s, e) => _embedder?.CheckAndReembed();
+        _reembedTimer.Tick += (s, e) =>
+        {
+            if (_detached) { _reembedTimer?.Stop(); return; }
+            if (_embedder != null && !_embedder.IsWidgetWindowAlive())
+            {
+                // HWND destroyed with the taskbar — this window is gone; signal App
+                _reembedTimer.Stop();
+                _tray.Dispose();
+                _hook.Dispose();
+                EmbedderLost?.Invoke();
+                return;
+            }
+            _embedder?.CheckAndReembed();
+        };
         _reembedTimer.Start();
     }
 

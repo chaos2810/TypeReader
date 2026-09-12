@@ -7,6 +7,7 @@ public partial class App : Application
 {
     private static Mutex? _mutex;
     private static bool _ownsMutex;
+    private static WidgetWindow? _widget;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -17,13 +18,28 @@ public partial class App : Application
             Shutdown();
             return;
         }
+        // Explorer dying destroys our embedded child HWND; WPF's default
+        // OnLastWindowClose would then quit the app. We manage lifetime
+        // explicitly and recreate the widget instead.
+        ShutdownMode = ShutdownMode.OnExplicitShutdown;
         base.OnStartup(e);
 
-        var widget = new WidgetWindow();
-        var helper = new System.Windows.Interop.WindowInteropHelper(widget);
+        CreateWidget();
+    }
+
+    private static void CreateWidget()
+    {
+        _widget = new WidgetWindow();
+        var helper = new System.Windows.Interop.WindowInteropHelper(_widget);
         helper.EnsureHandle();          // create HWND while still hidden
-        widget.EmbedBeforeShow();       // WS_CHILD + SetParent + position + acrylic (R1, R3)
-        widget.Show();                  // appears already inside the taskbar
+        _widget.EmbedBeforeShow();     // WS_CHILD + SetParent + position + acrylic (R1, R3)
+        _widget.Show();                 // appears already inside the taskbar
+        _widget.EmbedderLost += () =>
+        {
+            // old HWND destroyed with the taskbar (Explorer restart) — make a new one
+            _widget = null;
+            CreateWidget();
+        };
     }
 
     protected override void OnExit(ExitEventArgs e)

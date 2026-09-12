@@ -13,9 +13,6 @@ public partial class SettingsWindow : Window
     public SettingsWindow()
     {
         InitializeComponent();
-        foreach (var family in Fonts.SystemFontFamilies)
-            FontBox.Items.Add(family.Source);
-        FontBox.SelectedItem = _settings.FontFamily;
         foreach (var size in new[] { "10", "12", "14", "16", "18", "20", "24" })
             SizeBox.Items.Add(size);
         SizeBox.SelectedItem = ((int)_settings.FontSize).ToString();
@@ -32,15 +29,6 @@ public partial class SettingsWindow : Window
     {
         PreviewText.FontFamily = new FontFamily(_settings.FontFamily);
         PreviewText.FontSize = _settings.FontSize;
-    }
-
-    private void OnFontChanged(object sender, RoutedEventArgs e)
-    {
-        if (FontBox.SelectedItem is string s)
-        {
-            _settings.FontFamily = s;
-            ApplyPreview(); Save();
-        }
     }
 
     private void OnSizeChanged(object sender, RoutedEventArgs e)
