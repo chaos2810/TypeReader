@@ -136,13 +136,15 @@ internal sealed class TaskbarEmbedder
 
         // clip the HWND to the same rounded footprint as the XAML border
         // (2px inset, 6px corner radius) so the acrylic blur, the visible
-        // box, and the mouse hitbox all match
+        // box, and the mouse hitbox all match. On success the system OWNS
+        // the region — deleting it corrupts the window's hit area; only
+        // delete on failure.
         int left = (int)(2 * dpi), top = (int)(2 * dpi);
         int right = (int)((WidgetWidth - 2) * dpi), bottom = (int)((WidgetHeight - 2) * dpi);
         IntPtr rgn = NativeMethods.CreateRoundRectRgn(left, top, right, bottom,
             (int)(6 * dpi), (int)(6 * dpi));
-        NativeMethods.SetWindowRgn(_widgetHwnd, rgn, true);
-        NativeMethods.DeleteObject(rgn);
+        if (NativeMethods.SetWindowRgn(_widgetHwnd, rgn, true) == 0)
+            NativeMethods.DeleteObject(rgn);
     }
 
     // scan from `start` in `direction` (±4px steps) until the widget fits
