@@ -8,7 +8,7 @@ namespace TypeReader.App;
 public partial class WidgetWindow : Window
 {
     private readonly KeyboardHook _hook = new();
-    private readonly KeyFormatter _formatter = new();
+    private readonly KeyFormatter _formatter = new(new ToUnicodeCharMapper());
     private TaskbarEmbedder? _embedder;
     private System.Windows.Threading.DispatcherTimer? _reembedTimer;
     private bool _detached;

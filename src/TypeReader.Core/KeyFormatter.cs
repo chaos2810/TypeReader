@@ -2,6 +2,11 @@ using System.Text;
 
 namespace TypeReader.Core;
 
+public interface ICharMapper
+{
+    char? Map(int vk, byte[] keyboardState);
+}
+
 public class KeyFormatter
 {
     private static readonly Dictionary<int, string> NamedKeys = new()
@@ -21,6 +26,10 @@ public class KeyFormatter
     };
 
     private readonly List<int> _heldModifiers = new();
+    private readonly ICharMapper? _mapper;
+
+    public KeyFormatter() { }
+    public KeyFormatter(ICharMapper mapper) => _mapper = mapper;
 
     public string? Format(int vkCode, bool[] keyboardState, bool isKeyDown)
     {
@@ -56,12 +65,20 @@ public class KeyFormatter
         return NamedChar(vkCode, keyboardState);
     }
 
-    private static string NamedChar(int vkCode, bool[] keyboardState)
+    private string NamedChar(int vkCode, bool[] keyboardState)
     {
         if (NamedKeys.TryGetValue(vkCode, out var name))
             return name;
         if (vkCode is >= 0x70 and <= 0x7B)
             return "F" + (vkCode - 0x6F); // F1..F12
+        if (_mapper != null)
+        {
+            var state = new byte[256];
+            for (int i = 0; i < 256; i++)
+                if (keyboardState[i]) state[i] = 0x80;
+            var mapped = _mapper.Map(vkCode, state);
+            if (mapped.HasValue) return mapped.Value.ToString();
+        }
         // Character keys: map via US-layout ASCII fallback (ToUnicodeEx is
         // wired in production by the hook layer; see Task 3 Step 5).
         return MapVkToChar(vkCode, keyboardState[VKCodes.SHIFT]);

@@ -131,4 +131,31 @@ public class KeyFormatterTests
         var result = f.Format(0x53, State(), isKeyDown: true); // 'S' key
         Assert.Equal("s", result);
     }
+
+    [Fact]
+    public void InjectedMapper_IsUsed()
+    {
+        var f = new KeyFormatter(new StubMapper());
+        var result = f.Format(0x41, State(), isKeyDown: true);
+        Assert.Equal("@", result); // stub returns '@' for everything
+    }
+
+    private sealed class StubMapper : ICharMapper
+    {
+        public char? Map(int vk, byte[] keyboardState) => '@';
+    }
+
+    [Fact]
+    public void Combo_WithMapper_UppercasesSingleCharTail()
+    {
+        var f = new KeyFormatter(new StubLowerMapper());
+        f.Format(VKCodes.CONTROL, State(VKCodes.CONTROL), isKeyDown: true);
+        var result = f.Format(0x53, State(VKCodes.CONTROL), isKeyDown: true); // 'S' key
+        Assert.Equal("Ctrl + S", result);
+    }
+
+    private sealed class StubLowerMapper : ICharMapper
+    {
+        public char? Map(int vk, byte[] keyboardState) => 's';
+    }
 }
