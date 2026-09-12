@@ -9,27 +9,32 @@
     <Grid>
         <!-- R3: transparent surface; acrylic blur is applied to the HWND in
              TaskbarEmbedder.ApplyAcrylic(). Background stays transparent so
-             the blur shows through; rounded corners per FluentFlyout. -->
-        <Border CornerRadius="6" Margin="2">
-            <TextBlock x:Name="KeyText" Text="…" FontFamily="Segoe UI" FontSize="14"
-                       Foreground="White" VerticalAlignment="Center"
-                       HorizontalAlignment="Center" Padding="8,2">
-                <TextBlock.ContextMenu>
-                    <ContextMenu x:Name="KeyMenu">
-                        <ui:MenuItem Header="Settings" Click="OnSettings">
-                            <ui:MenuItem.Icon>
-                                <ui:SymbolIcon Symbol="Settings24"/>
-                            </ui:MenuItem.Icon>
-                        </ui:MenuItem>
-                        <Separator/>
-                        <ui:MenuItem Header="Quit" Click="OnQuit">
-                            <ui:MenuItem.Icon>
-                                <ui:SymbolIcon Symbol="Dismiss24"/>
-                            </ui:MenuItem.Icon>
-                        </ui:MenuItem>
-                    </ContextMenu>
-                </TextBlock.ContextMenu>
-            </TextBlock>
+             the blur shows through; rounded corners per FluentFlyout.
+             Near-invisible background makes the full area hit-testable. -->
+        <Border x:Name="MainBorder" CornerRadius="6" Margin="2" Background="#01000000"
+                MouseEnter="OnMouseEnter" MouseLeave="OnMouseLeave">
+            <Border x:Name="TopBorder" BorderThickness="0,1.25,0,0" CornerRadius="5"
+                    BorderBrush="Transparent">
+                <TextBlock x:Name="KeyText" Text="…" FontFamily="Segoe UI" FontSize="14"
+                           Foreground="White" VerticalAlignment="Center"
+                           HorizontalAlignment="Center" Padding="8,2">
+                    <TextBlock.ContextMenu>
+                        <ContextMenu x:Name="KeyMenu">
+                            <ui:MenuItem Header="Settings" Click="OnSettings">
+                                <ui:MenuItem.Icon>
+                                    <ui:SymbolIcon Symbol="Settings24"/>
+                                </ui:MenuItem.Icon>
+                            </ui:MenuItem>
+                            <Separator/>
+                            <ui:MenuItem Header="Quit" Click="OnQuit">
+                                <ui:MenuItem.Icon>
+                                    <ui:SymbolIcon Symbol="Dismiss24"/>
+                                </ui:MenuItem.Icon>
+                            </ui:MenuItem>
+                        </ContextMenu>
+                    </TextBlock.ContextMenu>
+                </TextBlock>
+            </Border>
         </Border>
     </Grid>
 </Window>

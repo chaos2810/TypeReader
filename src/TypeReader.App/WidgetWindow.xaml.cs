@@ -54,6 +54,52 @@ public partial class WidgetWindow : Window
         App.ApplySystemTheme();
     }
 
+    // hover glass effect (FluentFlyout recipe): translucent white overlay
+    // animated over 200ms, plus a subtle top highlight border
+    private void OnMouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+    {
+        bool isDark = !TaskbarEmbedder.LightTheme;
+
+        var targetColor = isDark
+            ? System.Windows.Media.Color.FromArgb(197, 255, 255, 255)
+            : System.Windows.Media.Color.FromArgb(255, 255, 255, 255);
+        double targetOpacity = isDark ? 0.075 : 0.6;
+
+        TopBorder.BorderBrush = new SolidColorBrush(
+            System.Windows.Media.Color.FromArgb(93, 255, 255, 255))
+        { Opacity = isDark ? 0.25 : 1 };
+
+        AnimateHover(targetColor, targetOpacity, System.Windows.Media.Animation.EasingMode.EaseOut);
+    }
+
+    private void OnMouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+    {
+        TopBorder.BorderBrush = Brushes.Transparent;
+        AnimateHover(System.Windows.Media.Colors.Transparent, 0, System.Windows.Media.Animation.EasingMode.EaseInOut);
+    }
+
+    private void AnimateHover(System.Windows.Media.Color color, double opacity, System.Windows.Media.Animation.EasingMode mode)
+    {
+        if (MainBorder.Background is not SolidColorBrush brush)
+        {
+            brush = new SolidColorBrush(System.Windows.Media.Colors.Transparent) { Opacity = 0 };
+            MainBorder.Background = brush;
+        }
+
+        brush.BeginAnimation(SolidColorBrush.ColorProperty, new System.Windows.Media.Animation.ColorAnimation
+        {
+            To = color,
+            Duration = TimeSpan.FromMilliseconds(200),
+            EasingFunction = new System.Windows.Media.Animation.CubicEase { EasingMode = mode }
+        });
+        brush.BeginAnimation(SolidColorBrush.OpacityProperty, new System.Windows.Media.Animation.DoubleAnimation
+        {
+            To = opacity,
+            Duration = TimeSpan.FromMilliseconds(200),
+            EasingFunction = new System.Windows.Media.Animation.CubicEase { EasingMode = mode }
+        });
+    }
+
     private void OnKeyPressed(int vkCode, bool[] keyboardState, bool isKeyDown, byte[] rawKeyboardState)
     {
         Dispatcher.BeginInvoke(() =>
