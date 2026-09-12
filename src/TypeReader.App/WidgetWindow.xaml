@@ -6,12 +6,12 @@
         WindowStyle="None" ResizeMode="NoResize" ShowInTaskbar="False"
         Background="Transparent" AllowsTransparency="True"
         TextOptions.TextRenderingMode="ClearType" TextOptions.TextFormattingMode="Ideal">
-    <Grid>
-        <!-- R3: transparent surface; acrylic blur is applied to the HWND in
-             TaskbarEmbedder.ApplyAcrylic(). Background stays transparent so
-             the blur shows through; rounded corners per FluentFlyout.
-             Near-invisible background makes the full area hit-testable. -->
-        <Border x:Name="MainBorder" CornerRadius="6" Margin="2" Background="#01000000"
+    <Grid Background="#01000000">
+        <!-- The Grid's near-invisible background (alpha 1/255) is the OS-level
+             hit layer: layered windows are click-through where alpha == 0.
+             It is NEVER animated. The hover glass animates MainBorder instead
+             (FluentFlyout separates these the same way). -->
+        <Border x:Name="MainBorder" CornerRadius="6" Margin="2" Background="Transparent"
                 MouseEnter="OnMouseEnter" MouseLeave="OnMouseLeave">
             <Border x:Name="TopBorder" BorderThickness="0,1.25,0,0" CornerRadius="5"
                     BorderBrush="Transparent">

@@ -85,6 +85,9 @@ public partial class WidgetWindow : Window
             brush = new SolidColorBrush(System.Windows.Media.Colors.Transparent) { Opacity = 0 };
             MainBorder.Background = brush;
         }
+        // note: only this overlay brush animates. The Grid's alpha-1
+        // background (the OS hit layer) is never touched, so hit-testing
+        // stays intact after any number of hover cycles.
 
         brush.BeginAnimation(SolidColorBrush.ColorProperty, new System.Windows.Media.Animation.ColorAnimation
         {
