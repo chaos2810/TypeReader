@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{71F76C84
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TypeReader.Core.Tests", "tests\TypeReader.Core.Tests\TypeReader.Core.Tests.csproj", "{49B420FE-26E2-48FA-8D4D-7499498428C8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TypeReader.App", "src\TypeReader.App\TypeReader.App.csproj", "{A78FA33A-8179-44FB-BAB8-19FE7EF1EE06}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,9 +30,14 @@ Global
 		{49B420FE-26E2-48FA-8D4D-7499498428C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49B420FE-26E2-48FA-8D4D-7499498428C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49B420FE-26E2-48FA-8D4D-7499498428C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A78FA33A-8179-44FB-BAB8-19FE7EF1EE06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A78FA33A-8179-44FB-BAB8-19FE7EF1EE06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A78FA33A-8179-44FB-BAB8-19FE7EF1EE06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A78FA33A-8179-44FB-BAB8-19FE7EF1EE06}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F1405FD9-8BB5-4325-BC80-6BA3CEC1C35A} = {0519B2D3-CAE1-44FB-ABB3-072220A8BDA6}
 		{49B420FE-26E2-48FA-8D4D-7499498428C8} = {71F76C84-F304-4AA8-82E6-0ED5FA526584}
+		{A78FA33A-8179-44FB-BAB8-19FE7EF1EE06} = {0519B2D3-CAE1-44FB-ABB3-072220A8BDA6}
 	EndGlobalSection
 EndGlobal
