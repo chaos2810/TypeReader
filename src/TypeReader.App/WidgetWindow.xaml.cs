@@ -60,10 +60,8 @@ public partial class WidgetWindow : Window
     {
         bool isDark = !TaskbarEmbedder.LightTheme;
 
-        // frosted glass on hover: real acrylic blur of the taskbar behind the
-        // box (EnableAcrylic) + FF's white tint and top highlight on top
-        _embedder?.EnableAcrylic();
-
+        // FF Grid_MouseEnter verbatim: white tint + top highlight over the
+        // (already frosted) box
         var targetColor = isDark
             ? System.Windows.Media.Color.FromArgb(197, 255, 255, 255)
             : System.Windows.Media.Color.FromArgb(255, 255, 255, 255);
@@ -78,7 +76,6 @@ public partial class WidgetWindow : Window
 
     private void OnMouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
     {
-        _embedder?.DisableAcrylic();
         TopBorder.BorderBrush = Brushes.Transparent;
         AnimateHover(System.Windows.Media.Colors.Transparent, 0, System.Windows.Media.Animation.EasingMode.EaseInOut);
     }

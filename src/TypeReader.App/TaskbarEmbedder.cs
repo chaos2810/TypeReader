@@ -28,6 +28,7 @@ internal sealed class TaskbarEmbedder
         style = (style & ~NativeMethods.WS_POPUP) | NativeMethods.WS_CHILD;
         NativeMethods.SetWindowLongPtr(_widgetHwnd, NativeMethods.GWL_STYLE, style);
         NativeMethods.SetParent(_widgetHwnd, taskbar);
+        EnableAcrylic();               // FF WindowBlurHelper recipe — frosted at rest
         _lastTaskbarHandle = taskbar;
         Reposition(taskbar);
     }
@@ -44,11 +45,9 @@ internal sealed class TaskbarEmbedder
         _lastTaskbarHandle = IntPtr.Zero;
     }
 
-    // R3: hover glass — real frosted blur applied on hover only. At rest the
-    // widget is transparent over the taskbar (like FluentFlyout's taskbar
-    // widget); on hover the acrylic accent frosts the area behind the box
-    // (the FF WindowBlurHelper technique, at a lighter tint than their
-    // flyouts so it reads as glass, not a dark slab).
+    // R3: frosted box — FluentFlyout's WindowBlurHelper.EnableBlur recipe
+    // verbatim (opacity 175, theme-aware background). Applied at rest so the
+    // widget reads as native frosted glass, matching FF's taskbar widget.
 
     public void EnableAcrylic()
     {
@@ -56,7 +55,7 @@ internal sealed class TaskbarEmbedder
         SetAccent(new NativeMethods.AccentPolicy
         {
             AccentState = NativeMethods.ACCENT_ENABLE_ACRYLICBLURBEHIND,
-            GradientColor = (0x66u << 24) | (background & 0xFFFFFF)
+            GradientColor = (175u << 24) | (background & 0xFFFFFF)
         });
     }
 
