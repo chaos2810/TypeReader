@@ -2,6 +2,9 @@ bin/
 obj/
 .vs/
 *.user
+TestResults/
+AppPackages/
+Generated Files/
 
 # Agent/skill generated files
 docs/
