@@ -82,7 +82,11 @@ public partial class WidgetWindow : Window
 
     private void AnimateHover(System.Windows.Media.Color color, double opacity, System.Windows.Media.Animation.EasingMode mode)
     {
-        if (MainBorder.Background is not SolidColorBrush brush)
+        // "Transparent" from XAML resolves to the frozen Brushes.Transparent
+        // singleton — animating a frozen brush throws (silently swallowed),
+        // which is why only the border used to show. Always animate a locally
+        // created, unfrozen brush.
+        if (MainBorder.Background is not SolidColorBrush brush || brush.IsFrozen)
         {
             brush = new SolidColorBrush(System.Windows.Media.Colors.Transparent) { Opacity = 0 };
             MainBorder.Background = brush;
