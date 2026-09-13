@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using TypeReader.Core;
@@ -12,7 +12,7 @@ public partial class WidgetWindow : Window
     private TaskbarEmbedder? _embedder;
     private System.Windows.Threading.DispatcherTimer? _reembedTimer;
     private bool _detached;
-    private readonly TrayIcon _tray = new();
+    private readonly AppIcon _tray = new();
 
     // raised when the widget HWND is destroyed (Explorer restart destroys
     // children with the taskbar); App recreates the widget
@@ -30,7 +30,7 @@ public partial class WidgetWindow : Window
         }
         catch (InvalidOperationException)
         {
-            KeyText.Text = "⚠"; // capture unavailable; widget continues without capture
+            KeyText.Text = "âš "; // capture unavailable; widget continues without capture
         }
         ApplySettings();
     }
@@ -83,7 +83,7 @@ public partial class WidgetWindow : Window
     private void AnimateHover(System.Windows.Media.Color color, double opacity, System.Windows.Media.Animation.EasingMode mode)
     {
         // "Transparent" from XAML resolves to the frozen Brushes.Transparent
-        // singleton — animating a frozen brush throws (silently swallowed),
+        // singleton â€” animating a frozen brush throws (silently swallowed),
         // which is why only the border used to show. Always animate a locally
         // created, unfrozen brush.
         if (MainBorder.Background is not SolidColorBrush brush || brush.IsFrozen)
@@ -130,7 +130,7 @@ public partial class WidgetWindow : Window
             if (_detached) { _reembedTimer?.Stop(); return; }
             if (_embedder != null && !_embedder.IsWidgetWindowAlive())
             {
-                // HWND destroyed with the taskbar — this window is gone; signal App
+                // HWND destroyed with the taskbar â€” this window is gone; signal App
                 _reembedTimer.Stop();
                 _tray.Dispose();
                 _hook.Dispose();
@@ -168,7 +168,7 @@ public partial class WidgetWindow : Window
 
     private void OnQuit(object sender, RoutedEventArgs e)
     {
-        // R2: detach from taskbar BEFORE closing — no residue
+        // R2: detach from taskbar BEFORE closing â€” no residue
         _reembedTimer?.Stop();
         if (!_detached)
         {

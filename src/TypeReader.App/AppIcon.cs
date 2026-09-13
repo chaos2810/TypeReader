@@ -4,14 +4,14 @@ using System.Windows.Forms;
 
 namespace TypeReader.App;
 
-internal sealed class TrayIcon : IDisposable
+internal sealed class AppIcon : IDisposable
 {
     private readonly NotifyIcon _icon;
 
     public event Action? SettingsRequested;
     public event Action? QuitRequested;
 
-    public TrayIcon()
+    public AppIcon()
     {
         _icon = new NotifyIcon
         {
