@@ -11,6 +11,12 @@ internal sealed class AppIcon : IDisposable
     public event Action? SettingsRequested;
     public event Action? QuitRequested;
 
+    public bool Visible
+    {
+        get => _icon.Visible;
+        set => _icon.Visible = value;
+    }
+
     public AppIcon()
     {
         _icon = new NotifyIcon

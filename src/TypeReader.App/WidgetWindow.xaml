@@ -28,6 +28,11 @@
                                     <ui:SymbolIcon Symbol="Settings24"/>
                                 </ui:MenuItem.Icon>
                             </ui:MenuItem>
+                            <ui:MenuItem x:Name="TrayToggleItem" Header="Hide tray icon" Click="OnToggleTrayIcon">
+                                <ui:MenuItem.Icon>
+                                    <ui:SymbolIcon x:Name="TrayToggleIcon" Symbol="EyeOff24"/>
+                                </ui:MenuItem.Icon>
+                            </ui:MenuItem>
                             <Separator/>
                             <ui:MenuItem Header="Quit" Click="OnQuit">
                                 <ui:MenuItem.Icon>

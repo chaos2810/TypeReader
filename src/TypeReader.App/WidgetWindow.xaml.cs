@@ -2,6 +2,7 @@
 using System.Windows.Interop;
 using System.Windows.Media;
 using TypeReader.Core;
+using Wpf.Ui.Controls;
 
 namespace TypeReader.App;
 
@@ -159,11 +160,29 @@ public partial class WidgetWindow : Window
         // nudge lands lowercase at center and keeps ellipsis/caps within ~2px
         KeyText.RenderTransform = new System.Windows.Media.TranslateTransform(
             0, -(0.6 + 0.09 * s.FontSize));
+        _tray.Visible = !s.HideTrayIcon;
+        TrayToggleItem.Header = s.HideTrayIcon ? "Show tray icon" : "Hide tray icon";
+        TrayToggleIcon.Symbol = s.HideTrayIcon ? SymbolRegular.Eye24 : SymbolRegular.EyeOff24;
         if (_embedder != null)
         {
             _embedder.Position = s.Position;
             _embedder.CheckAndReembed();
         }
+    }
+
+    private void OnToggleTrayIcon(object sender, RoutedEventArgs e)
+    {
+        var s = new SettingsStore().Load();
+        s.HideTrayIcon = !s.HideTrayIcon;
+        try
+        {
+            new SettingsStore().Save(s);
+        }
+        catch (Exception)
+        {
+            // settings write failed (disk/lock/ACL); apply in memory for this session
+        }
+        ApplySettings();
     }
 
     private void OnQuit(object sender, RoutedEventArgs e)
