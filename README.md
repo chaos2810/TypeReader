@@ -12,7 +12,7 @@ Type Reader is for anyone who wants to see their keystrokes at a glance: while t
 2. The widget appears in your taskbar right away — no window, no setup.
 3. Press any key. That's it.
 
-A small keyboard icon is added to the system tray (near the clock) so you can always reach the widget's settings or quit it.
+A small keyboard icon is added to the system tray (near the clock) so you can always reach the widget's settings or quit it. If you prefer a minimal tray, you can hide it from the widget's menu.
 
 ## Reading the display
 
@@ -42,9 +42,10 @@ Details worth knowing:
 Right-click anywhere on the widget to open its menu:
 
 - **Settings** — open the settings window.
+- **Hide tray icon** — remove the keyboard icon from the system tray. The menu item then becomes **Show tray icon**, so you can always bring it back. The choice is remembered.
 - **Quit** — close the widget and remove it from the taskbar.
 
-The tray icon has the same two options, so you can always reach them even if the widget itself is hard to click.
+The tray icon has the same Settings and Quit options, so you can always reach them even if the widget itself is hard to click.
 
 ## Settings
 
