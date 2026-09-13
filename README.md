@@ -29,6 +29,10 @@ The widget always shows your **most recent** key. Each new press replaces the pr
 | `Enter`, `Esc`, `Space` | Enter, Esc, Space |
 | Arrow keys | ← ↑ → ↓ |
 | `Win` (alone) | Win |
+| Media keys (`Vol Down`, etc.) | Vol Down |
+| `Browser Back` | Browser Back |
+| `F13`–`F24` | F13 |
+| IME keys | Kanji |
 
 Details worth knowing:
 
