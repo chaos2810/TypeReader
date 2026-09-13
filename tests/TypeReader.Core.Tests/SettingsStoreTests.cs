@@ -12,13 +12,14 @@ public class SettingsStoreTests
     public void SaveThenLoad_RoundTrips()
     {
         var store = new SettingsStore(TestDir);
-        var settings = new Settings { FontFamily = "Consolas", FontSize = 20, Position = WidgetPosition.Right };
+        var settings = new Settings { FontFamily = "Consolas", FontSize = 20, Position = WidgetPosition.Right, HideTrayIcon = true };
         store.Save(settings);
 
         var loaded = store.Load();
         Assert.Equal("Consolas", loaded.FontFamily);
         Assert.Equal(20, loaded.FontSize);
         Assert.Equal(WidgetPosition.Right, loaded.Position);
+        Assert.True(loaded.HideTrayIcon);
     }
 
     [Fact]
@@ -29,6 +30,7 @@ public class SettingsStoreTests
         Assert.Equal("Segoe UI", loaded.FontFamily);
         Assert.Equal(14, loaded.FontSize);
         Assert.Equal(WidgetPosition.Center, loaded.Position);
+        Assert.False(loaded.HideTrayIcon);
     }
 
     [Fact]
