@@ -158,4 +158,37 @@ public class KeyFormatterTests
     {
         public char? Map(int vk, byte[] keyboardState) => 's';
     }
+
+    [Theory]
+    [InlineData(0xAD, "Mute")]
+    [InlineData(0xAE, "Vol Down")]
+    [InlineData(0xAF, "Vol Up")]
+    [InlineData(0xB0, "Next Track")]
+    [InlineData(0xB1, "Prev Track")]
+    [InlineData(0xB2, "Stop")]
+    [InlineData(0xB3, "Play/Pause")]
+    [InlineData(0xA6, "Browser Back")]
+    [InlineData(0xA7, "Browser Forward")]
+    [InlineData(0xA8, "Browser Refresh")]
+    [InlineData(0xA9, "Browser Stop")]
+    [InlineData(0xAA, "Browser Search")]
+    [InlineData(0xAB, "Browser Favorites")]
+    [InlineData(0xAC, "Browser Home")]
+    [InlineData(0xB4, "Mail")]
+    [InlineData(0xB5, "Media")]
+    [InlineData(0xB6, "App 1")]
+    [InlineData(0xB7, "App 2")]
+    [InlineData(0x5D, "Menu")]
+    [InlineData(0x0C, "Clear")]
+    [InlineData(0x29, "Select")]
+    [InlineData(0x2A, "Print")]
+    [InlineData(0x2B, "Execute")]
+    [InlineData(0x2D, "Insert")]
+    [InlineData(0x2F, "Help")]
+    [InlineData(0x5F, "Sleep")]
+    public void MediaBrowserLaunchKeys_ShowReadableNames(int vk, string expected)
+    {
+        var f = new KeyFormatter();
+        Assert.Equal(expected, f.Format(vk, State(), isKeyDown: true));
+    }
 }

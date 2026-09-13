@@ -16,6 +16,13 @@ public class KeyFormatter
         [0x21] = "Page Up", [0x22] = "Page Down", [0x25] = "←", [0x26] = "↑",
         [0x27] = "→", [0x28] = "↓", [0x2C] = "Print Screen", [0x14] = "Caps Lock",
         [0x90] = "Num Lock", [0x91] = "Scroll Lock", [0x13] = "Pause",
+        [0xA6] = "Browser Back", [0xA7] = "Browser Forward", [0xA8] = "Browser Refresh",
+        [0xA9] = "Browser Stop", [0xAA] = "Browser Search", [0xAB] = "Browser Favorites",
+        [0xAC] = "Browser Home", [0xAD] = "Mute", [0xAE] = "Vol Down", [0xAF] = "Vol Up",
+        [0xB0] = "Next Track", [0xB1] = "Prev Track", [0xB2] = "Stop", [0xB3] = "Play/Pause",
+        [0xB4] = "Mail", [0xB5] = "Media", [0xB6] = "App 1", [0xB7] = "App 2",
+        [0x5D] = "Menu", [0x0C] = "Clear", [0x29] = "Select", [0x2A] = "Print",
+        [0x2B] = "Execute", [0x2D] = "Insert", [0x2F] = "Help", [0x5F] = "Sleep",
     };
 
     private static readonly Dictionary<int, string> ModifierNames = new()
