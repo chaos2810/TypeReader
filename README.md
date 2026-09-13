@@ -71,8 +71,8 @@ Requires the .NET 8 SDK:
 
 ## Troubleshooting
 
-**The widget isn't showing.** It embeds itself once the taskbar is ready. If it never appears, click the tray icon → Settings and try each position.
+**The widget isn't showing:** It embeds itself once the taskbar is ready. If it never appears, click the tray icon → Settings and try each position.
 
-**I want to reset everything.** Close the app and delete `%APPDATA%\TypeReader\settings.json`, then start it again.
+**I want to reset everything:** Close the app and delete `%APPDATA%\TypeReader\settings.json`, then start it again.
 
-**The widget overlaps something.** Press a key or wait a second — it re-checks free space every second and a half. You can also pick a different position in Settings.
+**The widget overlaps something:** Press a key or wait a second — it re-checks free space every second and a half. You can also pick a different position in Settings.
