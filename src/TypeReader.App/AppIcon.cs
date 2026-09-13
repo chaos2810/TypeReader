@@ -10,6 +10,7 @@ internal sealed class AppIcon : IDisposable
 
     public event Action? SettingsRequested;
     public event Action? QuitRequested;
+    public event Action? ToggleTrayIconRequested;
 
     public bool Visible
     {
@@ -49,6 +50,7 @@ internal sealed class AppIcon : IDisposable
     {
         var menu = new ContextMenuStrip();
         menu.Items.Add("Settings", null, (s, e) => SettingsRequested?.Invoke());
+        menu.Items.Add("Hide tray icon", null, (s, e) => ToggleTrayIconRequested?.Invoke());
         menu.Items.Add("Quit", null, (s, e) => QuitRequested?.Invoke());
         return menu;
     }

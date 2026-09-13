@@ -24,6 +24,7 @@ public partial class WidgetWindow : Window
         InitializeComponent();
         _tray.SettingsRequested += () => Dispatcher.Invoke(() => OnSettings(null!, null!));
         _tray.QuitRequested += () => Dispatcher.Invoke(() => OnQuit(null!, null!));
+        _tray.ToggleTrayIconRequested += () => Dispatcher.Invoke(() => OnToggleTrayIcon(null!, null!));
         _hook.KeyPressed += OnKeyPressed;
         try
         {
