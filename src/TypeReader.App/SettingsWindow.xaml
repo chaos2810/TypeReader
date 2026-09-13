@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         Title="Type Reader Settings" Width="360" SizeToContent="Height"
+        Icon="pack://application:,,,/trayicon.ico"
         WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
         ExtendsContentIntoTitleBar="True">
     <Grid>
@@ -10,7 +11,8 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <ui:TitleBar Title="Type Reader Settings" Grid.Row="0" ShowMaximize="False" ShowMinimize="False"/>
+        <ui:TitleBar Title="Type Reader Settings" Grid.Row="0" ShowMaximize="False" ShowMinimize="False"
+                     Icon="pack://application:,,,/trayicon.ico"/>
         <StackPanel Margin="16" Grid.Row="1">
             <TextBlock Text="Size"/>
             <ComboBox x:Name="SizeBox" SelectionChanged="OnSizeChanged"/>

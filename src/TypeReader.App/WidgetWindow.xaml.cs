@@ -154,6 +154,11 @@ public partial class WidgetWindow : Window
         var s = new SettingsStore().Load();
         KeyText.FontFamily = new System.Windows.Media.FontFamily(s.FontFamily);
         KeyText.FontSize = s.FontSize;
+        // WPF centers the full line box (ascent+descent), leaving visible
+        // glyphs low; measured against rendered output, a font-scaled upward
+        // nudge lands lowercase at center and keeps ellipsis/caps within ~2px
+        KeyText.RenderTransform = new System.Windows.Media.TranslateTransform(
+            0, -(0.6 + 0.09 * s.FontSize));
         if (_embedder != null)
         {
             _embedder.Position = s.Position;

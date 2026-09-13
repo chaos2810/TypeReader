@@ -15,6 +15,9 @@
                 MouseEnter="OnMouseEnter" MouseLeave="OnMouseLeave">
             <Border x:Name="TopBorder" BorderThickness="0,1.25,0,0" CornerRadius="5"
                     BorderBrush="Transparent">
+                <!-- vertical optical centering: WPF centers the line box, which
+                     leaves cap-height glyphs visibly low; ApplySettings applies
+                     a font-size-scaled upward nudge to compensate -->
                 <TextBlock x:Name="KeyText" Text="…" FontFamily="Segoe UI" FontSize="14"
                            Foreground="White" VerticalAlignment="Center"
                            HorizontalAlignment="Center" Padding="8,2">

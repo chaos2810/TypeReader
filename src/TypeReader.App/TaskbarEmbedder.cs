@@ -244,18 +244,19 @@ internal sealed class TaskbarEmbedder
         return merged;
     }
 
-    private List<(double Start, double End)>? _uiaRaw;
+    private List<(double Start, double End)>? _uiaLastGood;
     private IntPtr _uiaTaskbar;
     private DateTime _uiaTime = DateTime.MinValue;
 
     private List<(double Start, double End)> UiaOccupiedIntervals(IntPtr taskbar, NativeMethods.RECT tb, double dpi)
     {
         const double cacheSeconds = 5.0;
-        if (_uiaRaw != null && _uiaTaskbar == taskbar
+        if (_uiaLastGood != null && _uiaTaskbar == taskbar
             && (DateTime.UtcNow - _uiaTime).TotalSeconds < cacheSeconds)
-            return _uiaRaw.Select(v => ((v.Start - tb.Left) / dpi, (v.End - tb.Left) / dpi)).ToList();
+            return _uiaLastGood.Select(v => ((v.Start - tb.Left) / dpi, (v.End - tb.Left) / dpi)).ToList();
 
         var raw = new List<(double Start, double End)>(); // physical screen px
+        bool completed = false;
         var task = System.Threading.Tasks.Task.Run(() =>
         {
             try
@@ -278,20 +279,24 @@ internal sealed class TaskbarEmbedder
                         // element vanished mid-enumeration
                     }
                 }
+                completed = true;
             }
             catch
             {
                 // UIA unavailable/slow — HWND pass still covers the basics
             }
         });
-        if (!task.Wait(1000))
-        {
-            // time-boxed: keep whatever was collected before the deadline
-        }
-        _uiaRaw = raw;
+        // time-box the scan; on timeout the task keeps running but we must
+        // not cache a partial snapshot — a partial list is missing widgets/
+        // icons and would let the widget snap into overlap
+        completed = task.Wait(1000) && completed;
+
+        if (completed)
+            _uiaLastGood = raw; // full fresh snapshot
+
         _uiaTaskbar = taskbar;
-        _uiaTime = DateTime.UtcNow;
-        return raw.Select(v => ((v.Start - tb.Left) / dpi, (v.End - tb.Left) / dpi)).ToList();
+        _uiaTime = DateTime.UtcNow; // retry after cacheSeconds either way
+        return (_uiaLastGood ?? raw).Select(v => ((v.Start - tb.Left) / dpi, (v.End - tb.Left) / dpi)).ToList();
     }
 
     private static double RightAnchorX(IntPtr taskbar, NativeMethods.RECT taskbarRect, double dpi)
