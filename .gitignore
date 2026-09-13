@@ -6,3 +6,4 @@ obj/
 # Agent/skill generated files
 docs/
 .superpowers/
+release/

@@ -1,5 +1,7 @@
 # Type Reader
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 A small widget that lives in your Windows taskbar and instantly shows every key you press — the moment you press it.
 
 Type Reader is for anyone who wants to see their keystrokes at a glance: while typing, testing a keyboard, following a tutorial, or showing shortcuts to someone nearby. It sits quietly on the taskbar, and the latest key is always visible.
@@ -55,19 +57,6 @@ Changes apply immediately and are remembered. They are saved to:
     %APPDATA%\TypeReader\settings.json
 
 If that file is missing or unreadable, the widget simply starts with its defaults.
-
-## Look and feel
-
-Type Reader is designed to look native on Windows 11:
-
-- A frosted, rounded box that matches the taskbar's acrylic material.
-- Light and dark themes follow your Windows setting automatically.
-- Hovering the widget gently lightens it, like native taskbar buttons.
-
-## Reliability
-
-- If Explorer restarts (or crashes), the widget reappears on its own once the taskbar comes back.
-- Starting the app a second time does nothing — one instance is enough.
 
 ## Privacy
 
