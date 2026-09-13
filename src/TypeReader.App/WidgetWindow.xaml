@@ -10,7 +10,28 @@
         <!-- The Grid's near-invisible background (alpha 1/255) is the OS-level
              hit layer: layered windows are click-through where alpha == 0.
              It is NEVER animated. The hover glass animates MainBorder instead
-             (FluentFlyout separates these the same way). -->
+             (FluentFlyout separates these the same way). The context menu is
+             attached here so right-clicks anywhere in the widget open it. -->
+        <Grid.ContextMenu>
+            <ContextMenu x:Name="KeyMenu">
+                <ui:MenuItem Header="Settings" Click="OnSettings">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="Settings24"/>
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+                <ui:MenuItem x:Name="TrayToggleItem" Header="Hide tray icon" Click="OnToggleTrayIcon">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon x:Name="TrayToggleIcon" Symbol="EyeOff24"/>
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+                <Separator/>
+                <ui:MenuItem Header="Quit" Click="OnQuit">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="Dismiss24"/>
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+            </ContextMenu>
+        </Grid.ContextMenu>
         <Border x:Name="MainBorder" CornerRadius="6" Margin="2" Background="Transparent"
                 MouseEnter="OnMouseEnter" MouseLeave="OnMouseLeave">
             <Border x:Name="TopBorder" BorderThickness="0,1.25,0,0" CornerRadius="5"
@@ -20,28 +41,7 @@
                      a font-size-scaled upward nudge to compensate -->
                 <TextBlock x:Name="KeyText" Text="…" FontFamily="Segoe UI" FontSize="14"
                            Foreground="White" VerticalAlignment="Center"
-                           HorizontalAlignment="Center" Padding="8,2">
-                    <TextBlock.ContextMenu>
-                        <ContextMenu x:Name="KeyMenu">
-                            <ui:MenuItem Header="Settings" Click="OnSettings">
-                                <ui:MenuItem.Icon>
-                                    <ui:SymbolIcon Symbol="Settings24"/>
-                                </ui:MenuItem.Icon>
-                            </ui:MenuItem>
-                            <ui:MenuItem x:Name="TrayToggleItem" Header="Hide tray icon" Click="OnToggleTrayIcon">
-                                <ui:MenuItem.Icon>
-                                    <ui:SymbolIcon x:Name="TrayToggleIcon" Symbol="EyeOff24"/>
-                                </ui:MenuItem.Icon>
-                            </ui:MenuItem>
-                            <Separator/>
-                            <ui:MenuItem Header="Quit" Click="OnQuit">
-                                <ui:MenuItem.Icon>
-                                    <ui:SymbolIcon Symbol="Dismiss24"/>
-                                </ui:MenuItem.Icon>
-                            </ui:MenuItem>
-                        </ContextMenu>
-                    </TextBlock.ContextMenu>
-                </TextBlock>
+                           HorizontalAlignment="Center" Padding="8,2"/>
             </Border>
         </Border>
     </Grid>
