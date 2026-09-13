@@ -23,8 +23,9 @@ public class KeyFormatter
         [0xB4] = "Mail", [0xB5] = "Media", [0xB6] = "App 1", [0xB7] = "App 2",
         [0x5D] = "Menu", [0x0C] = "Clear", [0x29] = "Select", [0x2A] = "Print",
         [0x2B] = "Execute", [0x2D] = "Insert", [0x2F] = "Help", [0x5F] = "Sleep",
-        [0x15] = "Kana", [0x16] = "Junja", [0x17] = "Final", [0x18] = "Convert",
-        [0x19] = "Kanji", [0x1A] = "NonConvert", [0x1C] = "Mode Change",
+        [0x15] = "Kana", [0x16] = "IME On", [0x17] = "Junja", [0x18] = "Final",
+        [0x19] = "Kanji", [0x1A] = "IME Off", [0x1C] = "Convert",
+        [0x1D] = "NonConvert", [0x1F] = "Mode Change",
     };
 
     private static readonly Dictionary<int, string> FallbackNames = new()

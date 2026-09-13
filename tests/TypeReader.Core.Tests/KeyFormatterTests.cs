@@ -196,12 +196,14 @@ public class KeyFormatterTests
     [InlineData(0x7C, "F13")]
     [InlineData(0x87, "F24")]
     [InlineData(0x15, "Kana")]
-    [InlineData(0x16, "Junja")]
-    [InlineData(0x17, "Final")]
-    [InlineData(0x18, "Convert")]
+    [InlineData(0x16, "IME On")]
+    [InlineData(0x17, "Junja")]
+    [InlineData(0x18, "Final")]
     [InlineData(0x19, "Kanji")]
-    [InlineData(0x1A, "NonConvert")]
-    [InlineData(0x1C, "Mode Change")]
+    [InlineData(0x1A, "IME Off")]
+    [InlineData(0x1C, "Convert")]
+    [InlineData(0x1D, "NonConvert")]
+    [InlineData(0x1F, "Mode Change")]
     public void MacroAndImeKeys_ShowReadableNames(int vk, string expected)
     {
         var f = new KeyFormatter();
