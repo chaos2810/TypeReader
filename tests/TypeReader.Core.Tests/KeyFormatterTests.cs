@@ -191,4 +191,52 @@ public class KeyFormatterTests
         var f = new KeyFormatter();
         Assert.Equal(expected, f.Format(vk, State(), isKeyDown: true));
     }
+
+    [Theory]
+    [InlineData(0x7C, "F13")]
+    [InlineData(0x87, "F24")]
+    [InlineData(0x15, "Kana")]
+    [InlineData(0x16, "Junja")]
+    [InlineData(0x17, "Final")]
+    [InlineData(0x18, "Convert")]
+    [InlineData(0x19, "Kanji")]
+    [InlineData(0x1A, "NonConvert")]
+    [InlineData(0x1C, "Mode Change")]
+    public void MacroAndImeKeys_ShowReadableNames(int vk, string expected)
+    {
+        var f = new KeyFormatter();
+        Assert.Equal(expected, f.Format(vk, State(), isKeyDown: true));
+    }
+
+    [Fact]
+    public void F25_IsNotNamed()
+    {
+        var f = new KeyFormatter();
+        Assert.Equal("<0x88>", f.Format(0x88, State(), isKeyDown: true));
+    }
+
+    [Theory]
+    [InlineData(0xBA, "Semicolon")]
+    [InlineData(0xBB, "Equals")]
+    [InlineData(0xBC, "Comma")]
+    [InlineData(0xBD, "Minus")]
+    [InlineData(0xBE, "Period")]
+    [InlineData(0xBF, "Slash")]
+    [InlineData(0xC0, "Tilde")]
+    [InlineData(0xDB, "Left Bracket")]
+    [InlineData(0xDC, "Backslash")]
+    [InlineData(0xDD, "Right Bracket")]
+    [InlineData(0xDE, "Quote")]
+    public void OemKeys_WithoutMapper_ShowReadableNames(int vk, string expected)
+    {
+        var f = new KeyFormatter();
+        Assert.Equal(expected, f.Format(vk, State(), isKeyDown: true));
+    }
+
+    [Fact]
+    public void OemKey_WithMapper_PrefersMappedCharacter()
+    {
+        var f = new KeyFormatter(new StubMapper());
+        Assert.Equal("@", f.Format(0xBA, State(), isKeyDown: true));
+    }
 }
