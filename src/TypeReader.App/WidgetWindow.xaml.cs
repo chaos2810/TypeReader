@@ -150,9 +150,18 @@ public partial class WidgetWindow : Window
         settingsWindow.Show();
     }
 
+    private void ApplySettings(Settings s)
+    {
+        ApplySettingsCore(s);
+    }
+
     private void ApplySettings()
     {
-        var s = new SettingsStore().Load();
+        ApplySettingsCore(new SettingsStore().Load());
+    }
+
+    private void ApplySettingsCore(Settings s)
+    {
         KeyText.FontFamily = new System.Windows.Media.FontFamily(s.FontFamily);
         KeyText.FontSize = s.FontSize;
         // WPF centers the full line box (ascent+descent), leaving visible
@@ -177,12 +186,13 @@ public partial class WidgetWindow : Window
         try
         {
             new SettingsStore().Save(s);
+            ApplySettings();
         }
         catch (Exception)
         {
             // settings write failed (disk/lock/ACL); apply in memory for this session
+            ApplySettings(s);
         }
-        ApplySettings();
     }
 
     private void OnQuit(object sender, RoutedEventArgs e)
