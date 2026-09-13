@@ -7,6 +7,8 @@ internal static class NativeMethods
     public const int GWL_STYLE = -16;
     public const long WS_CHILD = 0x40000000L;
     public const long WS_POPUP = 0x80000000L;
+    public const int GWL_EXSTYLE = -20;
+    public const long WS_EX_TOOLWINDOW = 0x00000080L;
 
     [DllImport("user32.dll", SetLastError = true)]
     public static extern IntPtr FindWindow(string? lpClassName, string? lpWindowName);

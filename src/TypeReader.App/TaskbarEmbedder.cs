@@ -24,6 +24,12 @@ internal sealed class TaskbarEmbedder
         IntPtr taskbar = NativeMethods.FindWindow("Shell_TrayWnd", null);
         if (taskbar == IntPtr.Zero) return;
 
+        // WS_EX_TOOLWINDOW keeps the widget out of Alt+Tab, including the
+        // brief top-level window while Explorer restarts and we re-embed
+        long exStyle = NativeMethods.GetWindowLongPtr(_widgetHwnd, NativeMethods.GWL_EXSTYLE);
+        NativeMethods.SetWindowLongPtr(_widgetHwnd, NativeMethods.GWL_EXSTYLE,
+            exStyle | NativeMethods.WS_EX_TOOLWINDOW);
+
         long style = NativeMethods.GetWindowLongPtr(_widgetHwnd, NativeMethods.GWL_STYLE);
         style = (style & ~NativeMethods.WS_POPUP) | NativeMethods.WS_CHILD;
         NativeMethods.SetWindowLongPtr(_widgetHwnd, NativeMethods.GWL_STYLE, style);
