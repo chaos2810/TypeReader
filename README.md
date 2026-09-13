@@ -6,7 +6,7 @@ A Windows 11 taskbar widget that instantly displays the last key you press.
 - Shows characters as typed, friendly key names, and modifier combos
 - Right-click the widget: Settings (font, size, position) / Quit
 - Settings persist at %APPDATA%\TypeReader\settings.json
-- Stack: WPF .NET 8 (WinUI 3 prototype rejected — see prototype-winui3/README.md)
+- Stack: WPF .NET 8
 
 ## Build
 
