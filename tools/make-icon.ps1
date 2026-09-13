@@ -1,4 +1,4 @@
-Add-Type -AssemblyName System.Drawing
+﻿Add-Type -AssemblyName System.Drawing
 $sizes = @(16, 32, 48, 256)
 $pngs = @()
 
@@ -48,7 +48,7 @@ foreach ($s in $sizes) {
     $bmp.Dispose()
 }
 
-$outPath = Join-Path $PSScriptRoot "..\..\src\TypeReader.App\trayicon.ico"
+$outPath = Join-Path $PSScriptRoot "..\..\src\TypeReader.App\icon.ico"
 $ms = New-Object System.IO.MemoryStream
 $w = New-Object System.IO.BinaryWriter($ms)
 $w.Write([uint16]0)
@@ -71,10 +71,10 @@ for ($i = 0; $i -lt $sizes.Count; $i++) {
     $w.Write($pngs[$i])
 }
 $w.Flush()
-[System.IO.File]::WriteAllBytes((Resolve-Path $PSScriptRoot\..).Path + "\src\TypeReader.App\trayicon.ico", $ms.ToArray())
+[System.IO.File]::WriteAllBytes((Resolve-Path $PSScriptRoot\..).Path + "\src\TypeReader.App\icon.ico", $ms.ToArray())
 $w.Dispose()
 
-$bytes = [System.IO.File]::ReadAllBytes((Resolve-Path $PSScriptRoot\..).Path + "\src\TypeReader.App\trayicon.ico")
+$bytes = [System.IO.File]::ReadAllBytes((Resolve-Path $PSScriptRoot\..).Path + "\src\TypeReader.App\icon.ico")
 "count=$([System.BitConverter]::ToUInt16($bytes, 4))"
 for ($i = 0; $i -lt $sizes.Count; $i++) {
     $off = 6 + $i * 16

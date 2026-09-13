@@ -11,6 +11,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
+    <!-- icon of the EXE file itself (Explorer, taskbar, shortcuts) -->
+    <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="trayicon.ico" />
+    <Resource Include="icon.ico" />
   </ItemGroup>
 
   <!-- WinForms implicit global usings (Forms, Drawing) collide with WPF types (Application, Brushes, FontFamily); TrayIcon imports them explicitly -->
