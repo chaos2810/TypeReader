@@ -6,8 +6,10 @@ namespace TypeReader.App;
 
 internal sealed class TaskbarEmbedder
 {
-    private const int WidgetWidth = 120;
-    private const int WidgetHeight = 48;
+    internal const int WidgetWidth = 120;
+    internal const int WidgetHeight = 48;
+
+    internal static double WidgetRatio => WidgetWidth / (double)WidgetHeight;
 
     private readonly Window _window;
     private IntPtr _widgetHwnd;
