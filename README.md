@@ -47,6 +47,7 @@ Right-click anywhere on the widget to open its menu:
 
 - **Settings** — open the settings window.
 - **Hide tray icon** — remove the keyboard icon from the system tray. The menu item then becomes **Show tray icon**, so you can always bring it back. The choice is remembered.
+- **Show image instead of text** — switch the widget from showing your last keystroke to showing an image of your choice (PNG, JPG, animated GIF, BMP, ICO, TIFF, WDP). The first time you switch, a file picker opens, then a crop window lets you choose which part of the image appears — locked to the widget's shape, with scroll-to-zoom, Ctrl+/-/0, and drag-to-pan. The menu item then becomes **Show typed character**, and your image and crop are remembered.
 - **Quit** — close the widget and remove it from the taskbar.
 
 The tray icon has the same Settings and Quit options, so you can always reach them even if the widget itself is hard to click.
@@ -56,6 +57,8 @@ The tray icon has the same Settings and Quit options, so you can always reach th
 **Size** — pick the text size (10–24). The preview updates as you choose.
 
 **Position** — choose where the widget sits: **Left**, **Center**, or **Right**. Type Reader automatically slides into free space: it never covers pinned apps, the clock, system tray icons, or other taskbar widgets you may be running. If a neighbor moves or appears, the widget quietly adjusts itself.
+
+**Display** — choose whether the widget shows the **typed character** or an **image**. Switching to image mode reuses your saved image, or opens a file picker and the crop window the first time. **Choose image…** always lets you pick a new image and crop it. Animated GIFs play in the taskbar. If a chosen file isn't a supported image format (or is unreadable), TypeReader tells you and keeps your current display.
 
 Changes apply immediately and are remembered. They are saved to:
 
