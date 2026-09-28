@@ -29,4 +29,8 @@ public sealed class Settings
     public WidgetDisplayMode DisplayMode { get; set; } = WidgetDisplayMode.Text;
     public string ImagePath { get; set; } = "";
     public ImageCrop ImageCrop { get; set; } = ImageCrop.Full;
+
+    // how large the cropped image renders inside the widget rectangle
+    // (1.0 = fill, smaller = centered with background around it)
+    public double ImageScale { get; set; } = 1.0;
 }

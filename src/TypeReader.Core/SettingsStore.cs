@@ -43,6 +43,8 @@ public sealed class SettingsStore
         }
         if (s.ImageCrop is null || !s.ImageCrop.IsValid())
             s.ImageCrop = ImageCrop.Full;
+        if (double.IsNaN(s.ImageScale) || double.IsInfinity(s.ImageScale) || s.ImageScale < 0.1 || s.ImageScale > 1.0)
+            s.ImageScale = 1.0;
         return s;
     }
 

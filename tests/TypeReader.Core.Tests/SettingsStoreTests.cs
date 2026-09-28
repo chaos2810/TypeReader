@@ -156,4 +156,31 @@ public class SettingsStoreTests
         Assert.Equal(1, c.Width);
         Assert.Equal(1, c.Height);
     }
+
+    [Fact]
+    public void SaveThenLoad_ImageScale_RoundTrips()
+    {
+        var store = new SettingsStore(TestDir);
+        store.Save(new Settings { ImageScale = 0.6 });
+        Assert.Equal(0.6, store.Load().ImageScale);
+    }
+
+    [Fact]
+    public void Load_ImageScale_DefaultsToOne()
+    {
+        var store = new SettingsStore(TestDir);
+        Assert.Equal(1.0, store.Load().ImageScale);
+    }
+
+    [Theory]
+    [InlineData("2.0")]
+    [InlineData("-0.5")]
+    [InlineData("0.05")]
+    public void Load_ImageScale_OutOfRange_ResetsToOne(string raw)
+    {
+        Directory.CreateDirectory(TestDir);
+        File.WriteAllText(Path.Combine(TestDir, "settings.json"),
+            $$"""{"FontSize": 14, "ImageScale": {{raw}}}""");
+        Assert.Equal(1.0, new SettingsStore(TestDir).Load().ImageScale);
+    }
 }
