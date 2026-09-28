@@ -138,6 +138,7 @@ public partial class WidgetWindow : Window
                 _reembedTimer.Stop();
                 _tray.Dispose();
                 _hook.Dispose();
+                _widgetImage?.Dispose();
                 EmbedderLost?.Invoke();
                 return;
             }
