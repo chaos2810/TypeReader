@@ -78,7 +78,7 @@ public partial class SettingsWindow : FluentWindow
         _settings.ImagePath = path;
         _settings.ImageCrop = crop;
         _settings.DisplayMode = WidgetDisplayMode.Image;
-        ModeImage.IsChecked = true; // fires OnModeChanged, which saves (harmless double-save)
+        ModeImage.IsChecked = true; // re-fires OnModeChanged, which no-ops (mode already set)
         UpdatePreview();
         Save();
     }

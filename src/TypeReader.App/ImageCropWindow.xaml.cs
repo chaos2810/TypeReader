@@ -15,7 +15,6 @@ public partial class ImageCropWindow : Wpf.Ui.Controls.FluentWindow
 {
     private const double MinCropWidth = 24;
     private const double MaxZoom = 8.0;
-    private const double ZoomStep = 1.15;
 
     private readonly BitmapFrame _frame;
     private readonly Image _imageControl = new() { IsHitTestVisible = false };
