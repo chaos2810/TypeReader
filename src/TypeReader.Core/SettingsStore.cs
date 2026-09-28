@@ -34,6 +34,15 @@ public sealed class SettingsStore
             s.FontFamily = "Segoe UI";
         if (s.Position < WidgetPosition.Left || s.Position > WidgetPosition.Right)
             s.Position = WidgetPosition.Center;
+        if (s.DisplayMode < WidgetDisplayMode.Text || s.DisplayMode > WidgetDisplayMode.Image)
+            s.DisplayMode = WidgetDisplayMode.Text;
+        if (s.DisplayMode == WidgetDisplayMode.Image && !File.Exists(s.ImagePath))
+        {
+            s.DisplayMode = WidgetDisplayMode.Text;
+            s.ImagePath = "";
+        }
+        if (s.ImageCrop is null || !s.ImageCrop.IsValid())
+            s.ImageCrop = ImageCrop.Full;
         return s;
     }
 
