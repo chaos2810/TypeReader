@@ -1,3 +1,4 @@
+using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using TypeReader.Core;
@@ -23,6 +24,9 @@ public partial class SettingsWindow : FluentWindow
             case WidgetPosition.Right: PosRight.IsChecked = true; break;
             default: PosCenter.IsChecked = true; break;
         }
+        ModeText.IsChecked = _settings.DisplayMode == WidgetDisplayMode.Text;
+        ModeImage.IsChecked = _settings.DisplayMode == WidgetDisplayMode.Image;
+        UpdatePreview();
         ApplyPreview();
     }
 
@@ -47,6 +51,55 @@ public partial class SettingsWindow : FluentWindow
             : PosRight.IsChecked == true ? WidgetPosition.Right
             : WidgetPosition.Center;
         Save();
+    }
+
+    private void OnModeChanged(object sender, RoutedEventArgs e)
+    {
+        var mode = ModeImage.IsChecked == true ? WidgetDisplayMode.Image : WidgetDisplayMode.Text;
+        if (mode == _settings.DisplayMode) return; // ctor initialization, no-op
+        if (mode == WidgetDisplayMode.Image && !File.Exists(_settings.ImagePath))
+        {
+            if (!ImagePickFlow.TryPickAndCrop(out string path, out ImageCrop crop))
+            {
+                ModeText.IsChecked = true; // cancelled: revert, handler saves nothing
+                return;
+            }
+            _settings.ImagePath = path;
+            _settings.ImageCrop = crop;
+        }
+        _settings.DisplayMode = mode;
+        UpdatePreview();
+        Save();
+    }
+
+    private void OnChooseImage(object sender, RoutedEventArgs e)
+    {
+        if (!ImagePickFlow.TryPickAndCrop(out string path, out ImageCrop crop)) return;
+        _settings.ImagePath = path;
+        _settings.ImageCrop = crop;
+        _settings.DisplayMode = WidgetDisplayMode.Image;
+        ModeImage.IsChecked = true; // fires OnModeChanged, which saves (harmless double-save)
+        UpdatePreview();
+        Save();
+    }
+
+    private void UpdatePreview()
+    {
+        if (_settings.DisplayMode != WidgetDisplayMode.Image ||
+            string.IsNullOrEmpty(_settings.ImagePath) || !File.Exists(_settings.ImagePath))
+        {
+            PreviewImage.Source = null;
+            return;
+        }
+        try
+        {
+            var frame = WidgetImage.LoadFirstFrame(_settings.ImagePath);
+            PreviewImage.Source = WidgetImage.CropFrame(frame, _settings.ImageCrop);
+        }
+        catch (Exception)
+        {
+            PreviewImage.Source = null;
+        }
     }
 
     private void Save()

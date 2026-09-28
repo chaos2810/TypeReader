@@ -14,6 +14,15 @@
         <ui:TitleBar Title="Type Reader Settings" Grid.Row="0" ShowMaximize="False" ShowMinimize="False"
                      Icon="pack://application:,,,/icon.ico"/>
         <StackPanel Margin="16" Grid.Row="1">
+            <TextBlock Text="Display"/>
+            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                <RadioButton x:Name="ModeText" Content="Typed character" Margin="0,0,12,0" Checked="OnModeChanged"/>
+                <RadioButton x:Name="ModeImage" Content="Image" Checked="OnModeChanged"/>
+            </StackPanel>
+            <Button Content="Choose image…" HorizontalAlignment="Left" Margin="0,8,0,0" Click="OnChooseImage"/>
+            <Border CornerRadius="6" Padding="4" Background="#CC202020" HorizontalAlignment="Left" Margin="0,8,0,0">
+                <Image x:Name="PreviewImage" Width="180" Height="48" Stretch="Uniform"/>
+            </Border>
             <TextBlock Text="Size"/>
             <ComboBox x:Name="SizeBox" SelectionChanged="OnSizeChanged"/>
             <TextBlock Text="Preview" Margin="0,12,0,0"/>
