@@ -24,6 +24,11 @@
                         <ui:SymbolIcon x:Name="TrayToggleIcon" Symbol="EyeOff24"/>
                     </ui:MenuItem.Icon>
                 </ui:MenuItem>
+                <ui:MenuItem x:Name="DisplayToggleItem" Header="Show image instead of text" Click="OnToggleDisplayMode">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon x:Name="DisplayToggleIcon" Symbol="Image24"/>
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
                 <Separator/>
                 <ui:MenuItem Header="Quit" Click="OnQuit">
                     <ui:MenuItem.Icon>
@@ -36,12 +41,17 @@
                 MouseEnter="OnMouseEnter" MouseLeave="OnMouseLeave">
             <Border x:Name="TopBorder" BorderThickness="0,1.25,0,0" CornerRadius="5"
                     BorderBrush="Transparent">
-                <!-- vertical optical centering: WPF centers the line box, which
-                     leaves cap-height glyphs visibly low; ApplySettings applies
-                     a font-size-scaled upward nudge to compensate -->
-                <TextBlock x:Name="KeyText" Text="…" FontFamily="Segoe UI" FontSize="14"
-                           Foreground="White" VerticalAlignment="Center"
-                           HorizontalAlignment="Center" Padding="8,2"/>
+                <Grid>
+                    <!-- vertical optical centering: WPF centers the line box, which
+                         leaves cap-height glyphs visibly low; ApplySettings applies
+                         a font-size-scaled upward nudge to compensate -->
+                    <TextBlock x:Name="KeyText" Text="…" FontFamily="Segoe UI" FontSize="14"
+                               Foreground="White" VerticalAlignment="Center"
+                               HorizontalAlignment="Center" Padding="8,2"/>
+                    <Image x:Name="KeyImage" Stretch="Uniform" Visibility="Collapsed"
+                           VerticalAlignment="Center" HorizontalAlignment="Center"
+                           MaxWidth="112" MaxHeight="40"/>
+                </Grid>
             </Border>
         </Border>
     </Grid>

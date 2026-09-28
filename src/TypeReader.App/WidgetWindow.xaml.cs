@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.IO;
+using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using TypeReader.Core;
@@ -14,6 +15,7 @@ public partial class WidgetWindow : Window
     private System.Windows.Threading.DispatcherTimer? _reembedTimer;
     private bool _detached;
     private readonly AppIcon _tray = new();
+    private WidgetImage? _widgetImage;
 
     // raised when the widget HWND is destroyed (Explorer restart destroys
     // children with the taskbar); App recreates the widget
@@ -173,10 +175,74 @@ public partial class WidgetWindow : Window
         _tray.Visible = !s.HideTrayIcon;
         TrayToggleItem.Header = s.HideTrayIcon ? "Show tray icon" : "Hide tray icon";
         TrayToggleIcon.Symbol = s.HideTrayIcon ? SymbolRegular.Eye24 : SymbolRegular.EyeOff24;
+        ApplyDisplayMode(s);
         if (_embedder != null)
         {
             _embedder.Position = s.Position;
             _embedder.CheckAndReembed();
+        }
+    }
+
+    private void ApplyDisplayMode(Settings s)
+    {
+        bool imageMode = s.DisplayMode == WidgetDisplayMode.Image && File.Exists(s.ImagePath);
+        _widgetImage?.Dispose();
+        _widgetImage = null;
+        if (imageMode)
+        {
+            try
+            {
+                _widgetImage = WidgetImage.Load(s.ImagePath);
+                _widgetImage.Attach(KeyImage, s.ImageCrop);
+            }
+            catch (Exception)
+            {
+                // unreadable/corrupt saved file: silent text fallback for this session
+                imageMode = false;
+            }
+        }
+        KeyText.Visibility = imageMode ? Visibility.Collapsed : Visibility.Visible;
+        KeyImage.Visibility = imageMode ? Visibility.Visible : Visibility.Collapsed;
+        DisplayToggleItem.Header = imageMode ? "Show typed character" : "Show image instead of text";
+        DisplayToggleIcon.Symbol = imageMode ? SymbolRegular.Keyboard24 : SymbolRegular.Image24;
+    }
+
+    private void OnToggleDisplayMode(object sender, RoutedEventArgs e)
+    {
+        var s = new SettingsStore().Load();
+        if (s.DisplayMode == WidgetDisplayMode.Image)
+        {
+            s.DisplayMode = WidgetDisplayMode.Text;
+            TrySaveAndApply(s);
+            return;
+        }
+        if (File.Exists(s.ImagePath))
+        {
+            // saved image still present: reuse it without re-picking
+            s.DisplayMode = WidgetDisplayMode.Image;
+            TrySaveAndApply(s);
+            return;
+        }
+        if (ImagePickFlow.TryPickAndCrop(out string path, out ImageCrop crop))
+        {
+            s.DisplayMode = WidgetDisplayMode.Image;
+            s.ImagePath = path;
+            s.ImageCrop = crop;
+            TrySaveAndApply(s);
+        }
+    }
+
+    private void TrySaveAndApply(Settings s)
+    {
+        try
+        {
+            new SettingsStore().Save(s);
+            ApplySettings();
+        }
+        catch (Exception)
+        {
+            // settings write failed (disk/lock/ACL); apply in memory for this session
+            ApplySettings(s);
         }
     }
 
@@ -216,6 +282,7 @@ public partial class WidgetWindow : Window
             _embedder?.Detach();
             _detached = true;
         }
+        _widgetImage?.Dispose();
         _hook.Dispose();
         _tray.Dispose();
         base.OnClosed(e);
