@@ -38,6 +38,7 @@ internal sealed class TaskbarEmbedder
         NativeMethods.SetParent(_widgetHwnd, taskbar);
         EnableAcrylic();               // FF WindowBlurHelper recipe — frosted at rest
         _lastTaskbarHandle = taskbar;
+        _placed = false;              // force region clip on re-embed
         Reposition(taskbar);
     }
 
@@ -122,6 +123,12 @@ internal sealed class TaskbarEmbedder
             Reposition(taskbar);
     }
 
+    // last applied placement — Reposition is called every maintenance tick,
+    // but SetWindowPos/SetWindowRgn are only issued when something actually
+    // moved (a forced redraw every 1.5s stutters the GIF animation)
+    private bool _placed;
+    private int _lastX, _lastY, _lastW, _lastH;
+
     public WidgetPosition Position { get; set; } = WidgetPosition.Center;
 
     // true while the widget HWND still exists — false after Explorer restart
@@ -155,6 +162,15 @@ internal sealed class TaskbarEmbedder
             (int)(x * dpi), (int)(y * dpi),
             (int)(WidgetWidth * dpi), (int)(WidgetHeight * dpi),
             NativeMethods.SWP_NOZORDER | NativeMethods.SWP_NOACTIVATE | NativeMethods.SWP_SHOWWINDOW);
+
+        // skip the region update when nothing moved — SetWindowRgn(bRedraw=true)
+        // forces a full redraw and visibly stutters anything animating inside
+        int px = (int)(x * dpi), py = (int)(y * dpi);
+        int pw = (int)(WidgetWidth * dpi), ph = (int)(WidgetHeight * dpi);
+        if (_placed && px == _lastX && py == _lastY && pw == _lastW && ph == _lastH)
+            return;
+        _lastX = px; _lastY = py; _lastW = pw; _lastH = ph;
+        _placed = true;
 
         // clip the HWND to the same rounded footprint as the XAML border
         // (2px inset, 6px corner radius) so the acrylic blur, the visible
@@ -255,6 +271,7 @@ internal sealed class TaskbarEmbedder
     private List<(double Start, double End)>? _uiaLastGood;
     private IntPtr _uiaTaskbar;
     private DateTime _uiaTime = DateTime.MinValue;
+    private int _uiaBusy; // 1 = background refresh in flight
 
     private List<(double Start, double End)> UiaOccupiedIntervals(IntPtr taskbar, NativeMethods.RECT tb, double dpi)
     {
@@ -263,9 +280,15 @@ internal sealed class TaskbarEmbedder
             && (DateTime.UtcNow - _uiaTime).TotalSeconds < cacheSeconds)
             return _uiaLastGood.Select(v => ((v.Start - tb.Left) / dpi, (v.End - tb.Left) / dpi)).ToList();
 
+        // a UIA tree walk can take hundreds of ms — blocking the UI thread
+        // here stalls animation. Serve the stale cache while a background
+        // refresh runs; it publishes the fresh snapshot for the next tick.
+        if (System.Threading.Interlocked.CompareExchange(ref _uiaBusy, 1, 0) != 0)
+            return (_uiaLastGood ?? new List<(double, double)>())
+                .Select(v => ((v.Start - tb.Left) / dpi, (v.End - tb.Left) / dpi)).ToList();
+
         var raw = new List<(double Start, double End)>(); // physical screen px
-        bool completed = false;
-        var task = System.Threading.Tasks.Task.Run(() =>
+        System.Threading.Tasks.Task.Run(() =>
         {
             try
             {
@@ -287,23 +310,22 @@ internal sealed class TaskbarEmbedder
                         // element vanished mid-enumeration
                     }
                 }
-                completed = true;
+                _uiaLastGood = raw; // publish the fresh snapshot
             }
             catch
             {
                 // UIA unavailable/slow — HWND pass still covers the basics
             }
+            finally
+            {
+                _uiaTaskbar = taskbar;
+                _uiaTime = DateTime.UtcNow;
+                System.Threading.Interlocked.Exchange(ref _uiaBusy, 0);
+            }
         });
-        // time-box the scan; on timeout the task keeps running but we must
-        // not cache a partial snapshot — a partial list is missing widgets/
-        // icons and would let the widget snap into overlap
-        completed = task.Wait(1000) && completed;
 
-        if (completed)
-            _uiaLastGood = raw; // full fresh snapshot
-
-        _uiaTaskbar = taskbar;
-        _uiaTime = DateTime.UtcNow; // retry after cacheSeconds either way
+        // serve the previous snapshot this tick (may be empty on first run;
+        // the HWND pass still covers the basics until the cache fills)
         return (_uiaLastGood ?? raw).Select(v => ((v.Start - tb.Left) / dpi, (v.End - tb.Left) / dpi)).ToList();
     }
 
