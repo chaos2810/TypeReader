@@ -330,10 +330,11 @@ public partial class ImageCropWindow : Wpf.Ui.Controls.FluentWindow
         Close();
     }
 
-    private void OnSkipCrop(object sender, RoutedEventArgs e)
+    // whole image as the crop: the widget letterboxes it (Stretch=Uniform),
+    // so a square image shows complete inside the rectangular taskbar space
+    private void OnUseWholeImage(object sender, RoutedEventArgs e)
     {
-        var full = CropMath.CenterCropToRatio(_frame.PixelWidth, _frame.PixelHeight, TaskbarEmbedder.WidgetRatio);
-        _crop = CropMath.ToPixels(full, _frame.PixelWidth, _frame.PixelHeight);
+        _crop = new PixelRect(0, 0, _frame.PixelWidth, _frame.PixelHeight);
         _confirmed = true;
         Close();
     }

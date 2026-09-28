@@ -51,7 +51,7 @@
                 <TextBlock Text="Scroll to zoom · Ctrl+/-/0 · drag the shaded area to pan · drag the frame or its handles to adjust the crop (locked to the taskbar shape)."
                            TextWrapping="Wrap" FontSize="12" Margin="0,16,0,0"
                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
-                <Button Content="Skip crop" Margin="0,24,0,0" Click="OnSkipCrop"/>
+                <Button Content="Whole image" Margin="0,24,0,0" Click="OnUseWholeImage"/>
                 <Button Content="Cancel" Margin="0,8,0,0" Click="OnCancel"/>
                 <Button Content="Confirm" Margin="0,8,0,0" Click="OnConfirm"/>
             </StackPanel>
