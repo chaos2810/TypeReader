@@ -204,6 +204,11 @@ public partial class WidgetWindow : Window
         }
         KeyText.Visibility = imageMode ? Visibility.Collapsed : Visibility.Visible;
         KeyImage.Visibility = imageMode ? Visibility.Visible : Visibility.Collapsed;
+        // image size inside the rectangle: scale shrinks the display area,
+        // centered — the acrylic background shows around it
+        double sc = Math.Clamp(s.ImageScale, 0.25, 1.0);
+        KeyImage.MaxWidth = 112 * sc;
+        KeyImage.MaxHeight = 40 * sc;
         DisplayToggleItem.Header = imageMode ? "Show typed character" : "Show image instead of text";
         DisplayToggleIcon.Symbol = imageMode ? SymbolRegular.Keyboard24 : SymbolRegular.Image24;
     }
@@ -224,11 +229,12 @@ public partial class WidgetWindow : Window
             TrySaveAndApply(s);
             return;
         }
-        if (ImagePickFlow.TryPickAndCrop(out string path, out ImageCrop crop))
+        if (ImagePickFlow.TryPickAndCrop(s.ImageScale, out string path, out ImageCrop crop, out double scale))
         {
             s.DisplayMode = WidgetDisplayMode.Image;
             s.ImagePath = path;
             s.ImageCrop = crop;
+            s.ImageScale = scale;
             TrySaveAndApply(s);
         }
     }

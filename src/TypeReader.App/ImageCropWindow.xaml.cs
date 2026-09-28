@@ -33,25 +33,32 @@ public partial class ImageCropWindow : Wpf.Ui.Controls.FluentWindow
 
     private PixelRect _crop;
     private double _zoom = 1, _panX, _panY, _fitZoom = 1;
-    private bool _spaceHeld, _confirmed;
+    private double _scale = 1.0; // image size within the widget rectangle
+    private bool _spaceHeld, _confirmed, _sliderReady;
     private DragState? _drag;
 
     private sealed record DragState(string Mode, double StartX, double StartY, double PanX, double PanY, PixelRect Start);
 
-    private ImageCropWindow(BitmapFrame frame)
+    private ImageCropWindow(BitmapFrame frame, double initialScale)
     {
         InitializeComponent();
         _frame = frame;
+        _scale = Math.Clamp(initialScale, 0.25, 1.0);
+        SizeSlider.Value = _scale; // raises OnSizeSliderChanged; guarded by _sliderReady
+        _sliderReady = true;
         Viewport.Loaded += (s, e) => InitView();
         Viewport.SizeChanged += (s, e) => { ClampPan(); Render(); };
         BuildCanvas();
+        PreviewKeyDown += OnPreviewKeyDown;
+        PreviewKeyUp += OnPreviewKeyUp;
     }
 
-    public static bool Show(BitmapFrame frame, out ImageCrop crop)
+    public static bool Show(BitmapFrame frame, double initialScale, out ImageCrop crop, out double scale)
     {
-        var win = new ImageCropWindow(frame);
+        var win = new ImageCropWindow(frame, initialScale);
         win.ShowDialog();
         crop = win.CurrentCrop;
+        scale = win._scale;
         return win._confirmed;
     }
 
@@ -306,6 +313,16 @@ public partial class ImageCropWindow : Wpf.Ui.Controls.FluentWindow
     }
 
     // ---- buttons ----
+
+    private void OnSizeSliderChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (!_sliderReady) return;
+        _scale = Math.Clamp(e.NewValue, 0.25, 1.0);
+        // preview: fixed taskbar-shaped frame, image shrinks inside it
+        PreviewImage.MaxWidth = 180 * _scale;
+        PreviewImage.MaxHeight = 48 * _scale;
+        SizeLabel.Text = $"{Math.Round(_scale * 100)}%";
+    }
 
     private void OnConfirm(object sender, RoutedEventArgs e)
     {

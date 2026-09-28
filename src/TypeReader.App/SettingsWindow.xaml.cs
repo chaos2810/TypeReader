@@ -59,13 +59,14 @@ public partial class SettingsWindow : FluentWindow
         if (mode == _settings.DisplayMode) return; // ctor initialization, no-op
         if (mode == WidgetDisplayMode.Image && !File.Exists(_settings.ImagePath))
         {
-            if (!ImagePickFlow.TryPickAndCrop(out string path, out ImageCrop crop))
+            if (!ImagePickFlow.TryPickAndCrop(_settings.ImageScale, out string path, out ImageCrop crop, out double scale))
             {
                 ModeText.IsChecked = true; // cancelled: revert, handler saves nothing
                 return;
             }
             _settings.ImagePath = path;
             _settings.ImageCrop = crop;
+            _settings.ImageScale = scale;
         }
         _settings.DisplayMode = mode;
         UpdatePreview();
@@ -74,9 +75,10 @@ public partial class SettingsWindow : FluentWindow
 
     private void OnChooseImage(object sender, RoutedEventArgs e)
     {
-        if (!ImagePickFlow.TryPickAndCrop(out string path, out ImageCrop crop)) return;
+        if (!ImagePickFlow.TryPickAndCrop(_settings.ImageScale, out string path, out ImageCrop crop, out double scale)) return;
         _settings.ImagePath = path;
         _settings.ImageCrop = crop;
+        _settings.ImageScale = scale;
         _settings.DisplayMode = WidgetDisplayMode.Image;
         ModeImage.IsChecked = true; // re-fires OnModeChanged, which no-ops (mode already set)
         UpdatePreview();
@@ -85,6 +87,10 @@ public partial class SettingsWindow : FluentWindow
 
     private void UpdatePreview()
     {
+        // fixed taskbar-shaped frame; image shrinks inside it, like the widget
+        double sc = Math.Clamp(_settings.ImageScale, 0.25, 1.0);
+        PreviewImage.MaxWidth = 180 * sc;
+        PreviewImage.MaxHeight = 48 * sc;
         if (_settings.DisplayMode != WidgetDisplayMode.Image ||
             string.IsNullOrEmpty(_settings.ImagePath) || !File.Exists(_settings.ImagePath))
         {
